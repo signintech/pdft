@@ -179,14 +179,23 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 				continue
 			}
 			propContentsValType := propertyType(propContentsVal)
-			if propContentsValType != dictionary {
+			/*if propContentsValType != dictionary {
 				return errors.New("not support /Contents type not dictionary yet")
-			}
-
+			}*/
 			var contentsObjID int
-			contentsObjID, _, err = readObjIDFromDictionary(propContentsVal)
-			if err != nil {
-				return err
+			if propContentsValType == dictionary {
+				contentsObjID, _, err = readObjIDFromDictionary(propContentsVal)
+				if err != nil {
+					return err
+				}
+			} else if propContentsValType == array {
+				contentsObjIDs, _, err := readObjIDFromDictionaryArr(propContentsVal)
+				if err != nil || len(contentsObjIDs) <= 0 {
+					return err
+				}
+				contentsObjID = contentsObjIDs[0]
+			} else {
+				return errors.New("not support /Contents type not dictionary,array yet")
 			}
 
 			data := &p.getObjByID(contentsObjID).data
@@ -200,6 +209,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 			}
 
 			var stm *bytes.Buffer
+			//fmt.Printf("\n-------------------%d-----------------------\n%s\n\n", contentsObjID, string(*data))
 			stmLen, err := streamLength(p, data)
 			if err != nil {
 				return err

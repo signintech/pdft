@@ -2,6 +2,7 @@ package pdft
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -76,6 +77,9 @@ func readProperties(rawObj *[]byte, outProps *PDFObjPropertiesData) error {
 	tmp = regexpClose.ReplaceAllString(tmp, ">>")
 
 	var pp parseProps
+
+	fmt.Printf("\n\n%s\n", tmp)
+
 	pp.set(tmp, outProps)
 	return nil
 }

@@ -32,7 +32,6 @@ type current struct {
 
 //Open open pdf file
 func (i *InjPDF) Open(filepath string) error {
-	fmt.Printf("\n\n\n####Open %s ####\n\n", filepath)
 	//init
 	i.fontDatas = make(map[string]*PDFFontData)
 	//open
