@@ -1,8 +1,8 @@
 package pdft
 
 import (
+	"bytes"
 	"errors"
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -55,11 +55,19 @@ func readProperty(rawObj *[]byte, key string) (*PDFObjPropertyData, error) {
 
 func readProperties(rawObj *[]byte, outProps *PDFObjPropertiesData) error {
 
-	startObjInx := strings.Index(string(*rawObj), "<<")
-	endObjInx := strings.LastIndex(string(*rawObj), ">>")
+	tmp0 := *rawObj
+	index := bytes.Index(*rawObj, extractStreamBytes)
+	if index != -1 { //เป็น stream
+		tmp0 = tmp0[0:index]
+	}
+
+	startObjInx := strings.Index(string(tmp0), "<<")
+	endObjInx := strings.LastIndex(string(tmp0), ">>")
 	if startObjInx > endObjInx {
 		return errors.New("bad obj properties")
 	}
+
+	//fmt.Printf("\n\n%s\n\n%d\n", string(*rawObj), endObjInx)
 
 	var regexpSlash = regexp.MustCompile("[\\n\\t ]+\\/")
 	var regexpOpenB = regexp.MustCompile("[\\n\\t ]+\\[")
@@ -77,8 +85,6 @@ func readProperties(rawObj *[]byte, outProps *PDFObjPropertiesData) error {
 	tmp = regexpClose.ReplaceAllString(tmp, ">>")
 
 	var pp parseProps
-
-	fmt.Printf("\n\n%s\n", tmp)
 
 	pp.set(tmp, outProps)
 	return nil

@@ -14,6 +14,7 @@ func TestPDF(t *testing.T) {
 	//pdf(t, "pdf_from_word2010.pdf")
 	//pdf(t, "pdf_from_word2010_b.pdf")
 	//pdf(t, "pdf_from_chrome_50_win10.pdf")
+	pdf(t, "pdf_from_chrome_50_linux64.pdf")
 	//pdf(t, "pdf_from_word2013.pdf")
 	//pdf(t, "pdf_from_word2013_b.pdf")
 	//pdf(t, "pdf_from_rdlc.pdf")
@@ -42,7 +43,7 @@ func pdf(t *testing.T, filename string) {
 		return
 	}
 
-	err = ipdf.InsertText("hi", 1, 100, 100)
+	err = ipdf.InsertText("hi", 1, 10, 10)
 	if err != nil {
 		t.Error(err)
 		return

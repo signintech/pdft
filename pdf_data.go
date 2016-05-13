@@ -156,6 +156,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 		}
 
 		pageObjIDs, _, err = readObjIDFromDictionaryArr(propKidsVal)
+		fmt.Printf("pageObjIDs = %#v\n%s\\n\n", pageObjIDs, propKidsVal)
 		if err != nil {
 			return err
 		}
@@ -164,20 +165,27 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 
 	objMustReplaces := make(map[int]string)
 	for pageIndex, pageObjID := range pageObjIDs {
+
 		var cw2Content crawl
+		//fmt.Printf("cw2Content.set = %d\n\n", pageObjID)
 		cw2Content.set(p, pageObjID, "Contents")
 		err = cw2Content.run()
 		if err != nil {
 			return err
 		}
-		//fmt.Printf("cw2Content=%#v", cw2Content.results)
 
 		for _, r := range cw2Content.results {
+
+			fmt.Printf("%s\n\n", r.String())
+
 			var propContentsVal string
+			//fmt.Printf("id=%d\n", id)
 			propContentsVal, err = r.valOf("Contents")
+			//fmt.Printf("%d propContentsVal=%s\n\n", id, propContentsVal)
 			if err == ErrCrawlResultValOfNotFound {
 				continue
 			}
+
 			propContentsValType := propertyType(propContentsVal)
 			/*if propContentsValType != dictionary {
 				return errors.New("not support /Contents type not dictionary yet")
@@ -231,7 +239,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 
 	for objID := range objMustReplaces {
 		//_ = objID
-		//fmt.Printf("objID=%d\n", objID)
+		fmt.Printf("objID=%d\n", objID)
 		p.getObjByID(objID).data = []byte("" + objMustReplaces[objID] + "")
 		//fmt.Printf("objId=%d %s\n", objID, string(p.getObjByID(objID).data))
 	}
