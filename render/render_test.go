@@ -33,7 +33,7 @@ func TestRender(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	rd.ShowCellBorder(true)
+	//rd.ShowCellBorder(true)
 	err = rd.AddFont("arial", "../test/ttf/Loma.ttf")
 	if err != nil {
 		t.Error(err)
@@ -46,8 +46,9 @@ func TestRender(t *testing.T) {
 		return
 	}
 
-	rd.Text("fname", "วันพรรษ")
-	rd.Text("lname", "อนันตพันธ์ xxxxxxxxxxxxxxxxx")
+	rd.ShowDesignView()
+	//rd.Text("fname", "วันพรรษ")
+	//rd.Text("lname", "อนันตพันธ์ xxxxxxxxxxxxxxxxx")
 	err = rd.Save("../test/out/render01.pdf")
 	if err != nil {
 		t.Error(err)

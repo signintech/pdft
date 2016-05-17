@@ -37,3 +37,11 @@ func (r *Render) Text(key string, text string) error {
 	}
 	return ErrNotFoundKey
 }
+
+//ShowDesignView for debug
+func (r *Render) ShowDesignView() {
+	r.ShowCellBorder(true)
+	for key, finfo := range r.finfoMap {
+		r.Insert("#"+key, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align)
+	}
+}
