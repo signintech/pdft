@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -43,12 +44,29 @@ type current struct {
 	fontName  string
 	fontStyle string
 	fontSize  int
+	lineWidth float64
+}
+
+//ShowCellBorder  show cell of border
+func (i *PDFt) ShowCellBorder(isShow bool) {
+	var clw ContentLineStyle
+	if isShow {
+		clw.width = 0.1
+		clw.lineType = "dotted"
+		i.curr.lineWidth = 0.1
+	} else {
+		clw.width = 0.0
+		clw.lineType = ""
+		i.curr.lineWidth = 0.0
+	}
+	i.contenters = append(i.contenters, &clw)
 }
 
 //Open open pdf file
 func (i *PDFt) Open(filepath string) error {
 	//init
 	i.fontDatas = make(map[string]*PDFFontData)
+	i.curr.lineWidth = 1.0
 	//open
 	f, err := os.Open(filepath)
 	if err != nil {
@@ -61,11 +79,13 @@ func (i *PDFt) Open(filepath string) error {
 		return err
 	}
 
+	i.ShowCellBorder(false)
+
 	return nil
 }
 
-//InsertText insert text in to pdf
-func (i *PDFt) InsertText(text string, pageNum int, x float64, y float64, w float64, h float64, align int) error {
+//Insert insert text in to pdf
+func (i *PDFt) Insert(text string, pageNum int, x float64, y float64, w float64, h float64, align int) error {
 
 	var ct ContentText
 	ct.text = text
@@ -75,6 +95,10 @@ func (i *PDFt) InsertText(text string, pageNum int, x float64, y float64, w floa
 	ct.pageNum = pageNum
 	ct.x = x
 	ct.y = y
+	ct.w = w
+	ct.h = h
+	ct.align = align
+	ct.lineWidth = i.curr.lineWidth
 	if _, have := i.fontDatas[ct.fontName]; !have {
 		return ErrFontNameNotFound
 	}
@@ -113,6 +137,20 @@ func (i *PDFt) SetFont(name string, style string, size int) error {
 
 //Save save output pdf
 func (i *PDFt) Save(filepath string) error {
+	var buff bytes.Buffer
+	err := i.SaveTo(&buff)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(filepath, buff.Bytes(), 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//SaveTo save pdf to io.Writer
+func (i *PDFt) SaveTo(w io.Writer) error {
 
 	newpdf, lastID, err := i.build()
 	if err != nil {
@@ -123,12 +161,10 @@ func (i *PDFt) Save(filepath string) error {
 	if err != nil {
 		return err
 	}
-
-	err = ioutil.WriteFile(filepath, buff.Bytes(), 0644)
+	_, err = buff.WriteTo(w)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 

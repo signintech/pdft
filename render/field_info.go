@@ -13,8 +13,9 @@ func (f FieldInfos) toMap() map[string]FieldInfo {
 
 //FieldInfo field position
 type FieldInfo struct {
-	Key   string
-	X, Y  float64
-	W, H  float64
-	Align int
+	Key     string
+	PageNum int
+	X, Y    float64
+	W, H    float64
+	Align   int
 }

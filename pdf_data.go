@@ -156,7 +156,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 		}
 
 		pageObjIDs, _, err = readObjIDFromDictionaryArr(propKidsVal)
-		fmt.Printf("pageObjIDs = %#v\n%s\\n\n", pageObjIDs, propKidsVal)
+		//	fmt.Printf("pageObjIDs = %#v\n%s\\n\n", pageObjIDs, propKidsVal)
 		if err != nil {
 			return err
 		}
@@ -176,7 +176,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 
 		for _, r := range cw2Content.results {
 
-			fmt.Printf("%s\n\n", r.String())
+			//fmt.Printf("%s\n\n", r.String())
 
 			var propContentsVal string
 			//fmt.Printf("id=%d\n", id)

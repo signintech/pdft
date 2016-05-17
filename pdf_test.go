@@ -45,7 +45,7 @@ func pdf(t *testing.T, filename string) {
 		return
 	}
 
-	err = ipdf.InsertText("hi", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom)
+	err = ipdf.Insert("hi", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom)
 	if err != nil {
 		t.Error(err)
 		return

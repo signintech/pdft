@@ -13,7 +13,7 @@ var ErrNotFoundKey = errors.New("not found key")
 func NewRender(pdfTmpl string, finfos FieldInfos) (*Render, error) {
 	var rd Render
 	rd.finfoMap = finfos.toMap()
-	err := rd.open(pdfTmpl)
+	err := rd.Open(pdfTmpl)
 	if err != nil {
 		return nil, err
 	}
@@ -22,20 +22,18 @@ func NewRender(pdfTmpl string, finfos FieldInfos) (*Render, error) {
 
 //Render pdf render
 type Render struct {
-	pt       pdft.PDFt
+	pdft.PDFt
 	finfoMap map[string]FieldInfo
 }
 
-func (r *Render) open(filepath string) error {
-	err := r.pt.Open(filepath)
-	if err != nil {
-		return err
+//Text write text to pdf
+func (r *Render) Text(key string, text string) error {
+	if finfo, ok := r.finfoMap[key]; ok {
+		err := r.Insert(text, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-	return err
-}
-
-//WriteText write text to pdf
-func (r *Render) WriteText(key string, text string) error {
-
 	return ErrNotFoundKey
 }

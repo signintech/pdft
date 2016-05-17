@@ -16,12 +16,25 @@ type ContentText struct {
 	x           float64
 	y           float64
 	pdfFontData *PDFFontData
+	w           float64
+	h           float64
+	align       int
+	lineWidth   float64
 }
 
 func (c *ContentText) toSteram() (*bytes.Buffer, error) {
 
+	var border = 0
+	if c.lineWidth > 0 {
+		border = Left | Right | Top | Bottom
+	}
+
 	var cc gopdf.CacheContent
-	cc.Setup(nil,
+	cc.Setup(
+		&gopdf.Rect{
+			W: c.w,
+			H: c.h,
+		},
 		gopdf.Rgb{},
 		1.0,
 		c.pdfFontData.fontIndex(),
@@ -33,9 +46,13 @@ func (c *ContentText) toSteram() (*bytes.Buffer, error) {
 		&c.pdfFontData.font,
 		841.89,
 		gopdf.ContentTypeText,
-		gopdf.CellOption{},
-		0.0,
+		gopdf.CellOption{
+			Align:  c.align,
+			Border: border,
+		},
+		c.lineWidth,
 	)
+
 	cc.WriteTextToContent(c.text)
 	buff, err := cc.ToStream()
 	if err != nil {
