@@ -3,6 +3,8 @@ package pdft
 import (
 	"fmt"
 	"testing"
+
+	"github.com/signintech/gopdf"
 )
 
 func TestPDF(t *testing.T) {
@@ -22,7 +24,7 @@ func TestPDF(t *testing.T) {
 
 func pdf(t *testing.T, filename string) {
 	fmt.Printf("\n\n\n####Open %s ####\n\n", filename)
-	var ipdf InjPDF
+	var ipdf PDFt
 	//err := ipdf.Open("test/pdf/pdf_from_docx_with_f.pdf")
 	err := ipdf.Open("test/pdf/" + filename)
 	//err := ipdf.Open("test/pdf/pdf_from_docx.pdf")
@@ -43,7 +45,7 @@ func pdf(t *testing.T, filename string) {
 		return
 	}
 
-	err = ipdf.InsertText("hi", 1, 10, 10)
+	err = ipdf.InsertText("hi", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom)
 	if err != nil {
 		t.Error(err)
 		return

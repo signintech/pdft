@@ -12,7 +12,7 @@ func TestPDFParse(t *testing.T) {
 func pdfParseChrome50Win10(t *testing.T) {
 	filename := "pdf_from_chrome_50_win10.pdf"
 	fmt.Printf("\n\n\n####Open %s ####\n\n", filename)
-	var ipdf InjPDF
+	var ipdf PDFt
 	//err := ipdf.Open("test/pdf/pdf_from_docx_with_f.pdf")
 	err := ipdf.Open("test/pdf/" + filename)
 	//err := ipdf.Open("test/pdf/pdf_from_docx.pdf")

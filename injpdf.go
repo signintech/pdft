@@ -8,6 +8,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/signintech/gopdf"
 )
 
 //ErrAddSameFontName add same font name
@@ -16,8 +18,21 @@ var ErrAddSameFontName = errors.New("add same font name")
 //ErrFontNameNotFound font name not found
 var ErrFontNameNotFound = errors.New("font name not found")
 
-//InjPDF inject text to pdf
-type InjPDF struct {
+//Left left
+const Left = gopdf.Left //001000
+//Top top
+const Top = gopdf.Top //000100
+//Right right
+const Right = gopdf.Right //000010
+//Bottom bottom
+const Bottom = gopdf.Bottom //000001
+//Center center
+const Center = gopdf.Center //010000
+//Middle middle
+const Middle = gopdf.Middle //100000
+
+//PDFt inject text to pdf
+type PDFt struct {
 	pdf        PDFData
 	fontDatas  map[string]*PDFFontData
 	curr       current
@@ -31,7 +46,7 @@ type current struct {
 }
 
 //Open open pdf file
-func (i *InjPDF) Open(filepath string) error {
+func (i *PDFt) Open(filepath string) error {
 	//init
 	i.fontDatas = make(map[string]*PDFFontData)
 	//open
@@ -50,7 +65,7 @@ func (i *InjPDF) Open(filepath string) error {
 }
 
 //InsertText insert text in to pdf
-func (i *InjPDF) InsertText(text string, pageNum int, x float64, y float64) error {
+func (i *PDFt) InsertText(text string, pageNum int, x float64, y float64, w float64, h float64, align int) error {
 
 	var ct ContentText
 	ct.text = text
@@ -69,7 +84,7 @@ func (i *InjPDF) InsertText(text string, pageNum int, x float64, y float64) erro
 }
 
 //AddFont add ttf font
-func (i *InjPDF) AddFont(name string, ttfpath string) error {
+func (i *PDFt) AddFont(name string, ttfpath string) error {
 
 	if _, have := i.fontDatas[name]; have {
 		return ErrAddSameFontName
@@ -85,7 +100,7 @@ func (i *InjPDF) AddFont(name string, ttfpath string) error {
 }
 
 //SetFont set font
-func (i *InjPDF) SetFont(name string, style string, size int) error {
+func (i *PDFt) SetFont(name string, style string, size int) error {
 
 	if _, have := i.fontDatas[name]; !have {
 		return ErrFontNameNotFound
@@ -97,7 +112,7 @@ func (i *InjPDF) SetFont(name string, style string, size int) error {
 }
 
 //Save save output pdf
-func (i *InjPDF) Save(filepath string) error {
+func (i *PDFt) Save(filepath string) error {
 
 	newpdf, lastID, err := i.build()
 	if err != nil {
@@ -117,7 +132,7 @@ func (i *InjPDF) Save(filepath string) error {
 	return nil
 }
 
-func (i *InjPDF) build() (*PDFData, int, error) {
+func (i *PDFt) build() (*PDFData, int, error) {
 
 	var err error
 	nextID := i.pdf.maxID()
@@ -172,7 +187,7 @@ func (i *InjPDF) build() (*PDFData, int, error) {
 	return &newpdf, nextID, nil
 }
 
-func (i *InjPDF) toStream(newpdf *PDFData, lastID int) (*bytes.Buffer, error) {
+func (i *PDFt) toStream(newpdf *PDFData, lastID int) (*bytes.Buffer, error) {
 	var buff bytes.Buffer
 	buff.WriteString("%PDF-1.7\n\n")
 	var xrefs []int
@@ -187,7 +202,7 @@ func (i *InjPDF) toStream(newpdf *PDFData, lastID int) (*bytes.Buffer, error) {
 	return &buff, nil
 }
 
-func (i *InjPDF) xref(linelens []int, buff *bytes.Buffer, size int, rootID int) {
+func (i *PDFt) xref(linelens []int, buff *bytes.Buffer, size int, rootID int) {
 	xrefbyteoffset := buff.Len()
 	buff.WriteString("\nxref\n")
 	buff.WriteString(fmt.Sprintf("0 %d\r\n", size))
@@ -210,7 +225,7 @@ func (i *InjPDF) xref(linelens []int, buff *bytes.Buffer, size int, rootID int) 
 	buff.WriteString("\n%%EOF\n")
 }
 
-func (i *InjPDF) formatXrefline(n int) string {
+func (i *PDFt) formatXrefline(n int) string {
 	str := strconv.Itoa(n)
 	for len(str) < 10 {
 		str = "0" + str
