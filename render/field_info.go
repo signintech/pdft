@@ -18,4 +18,6 @@ type FieldInfo struct {
 	X, Y    float64
 	W, H    float64
 	Align   int
+	Font    string
+	Size    int
 }

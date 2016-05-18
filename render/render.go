@@ -29,7 +29,13 @@ type Render struct {
 //Text write text to pdf
 func (r *Render) Text(key string, text string) error {
 	if finfo, ok := r.finfoMap[key]; ok {
-		err := r.Insert(text, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align)
+
+		err := r.SetFont(finfo.Font, "", finfo.Size)
+		if err != nil {
+			return err
+		}
+
+		err = r.Insert(text, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align)
 		if err != nil {
 			return err
 		}
@@ -42,6 +48,7 @@ func (r *Render) Text(key string, text string) error {
 func (r *Render) ShowDesignView() {
 	r.ShowCellBorder(true)
 	for key, finfo := range r.finfoMap {
+		r.SetFont(finfo.Font, "", finfo.Size)
 		r.Insert("#"+key, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align)
 	}
 }
