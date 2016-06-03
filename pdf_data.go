@@ -48,6 +48,35 @@ func (p *PDFData) maxID() int {
 	return max
 }
 
+func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
+	var err error
+	var cw crawl
+	cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources")
+	err = cw.run()
+	if err != nil {
+		return err
+	}
+
+	found := false
+	var xObjectVal string
+	for _, r := range cw.results {
+		xObjectVal, err = r.valOf("XObject")
+		if err == ErrCrawlResultValOfNotFound {
+			continue
+		} else if err != nil {
+			return err
+		}
+		//fmt.Printf("objID=%d %s\n", objID, xObjectVal)
+		found = true
+	}
+
+	if !found {
+		_ = xObjectVal
+	}
+
+	return nil
+}
+
 func (p *PDFData) injectFontsToPDF(fontDatas map[string]*PDFFontData) error {
 
 	var err error
@@ -239,7 +268,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 
 	for objID := range objMustReplaces {
 		//_ = objID
-		fmt.Printf("objID=%d\n", objID)
+		//fmt.Printf("objID=%d\n", objID)
 		p.getObjByID(objID).data = []byte("" + objMustReplaces[objID] + "")
 		//fmt.Printf("objId=%d %s\n", objID, string(p.getObjByID(objID).data))
 	}

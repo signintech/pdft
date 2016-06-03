@@ -36,6 +36,7 @@ const Middle = gopdf.Middle //100000
 type PDFt struct {
 	pdf        PDFData
 	fontDatas  map[string]*PDFFontData
+	pdfImgs    []PDFImageData
 	curr       current
 	contenters []Contenter
 }
@@ -105,6 +106,19 @@ func (i *PDFt) Insert(text string, pageNum int, x float64, y float64, w float64,
 	ct.pdfFontData = i.fontDatas[ct.fontName]
 	i.contenters = append(i.contenters, &ct)
 	return i.fontDatas[ct.fontName].addChars(text)
+}
+
+//InsertImgBase64 insert img base 64
+func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float64, w float64, h float64) error {
+
+	var pdfimg PDFImageData
+	err := pdfimg.setImgBase64(base64str)
+	if err != nil {
+		return err
+	}
+	i.pdfImgs = append(i.pdfImgs, pdfimg)
+
+	return nil
 }
 
 //AddFont add ttf font
@@ -213,6 +227,19 @@ func (i *PDFt) build() (*PDFData, int, error) {
 		newpdf.put(unicodeMapObj)
 		newpdf.put(fontDescObj)
 		newpdf.put(dictionaryObj)
+	}
+
+	for _, pdfImg := range i.pdfImgs {
+		nextID++
+		var obj PDFObjData
+		obj.objID = nextID
+		obj.data = pdfImg.imgObj.GetObjBuff().Bytes()
+		newpdf.put(obj)
+	}
+
+	err = newpdf.injectImgsToPDF(i.pdfImgs)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	err = newpdf.injectContentToPDF(&i.contenters)

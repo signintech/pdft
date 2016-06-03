@@ -28,6 +28,7 @@ type Render struct {
 
 //Text write text to pdf
 func (r *Render) Text(key string, text string) error {
+
 	if finfo, ok := r.finfoMap[key]; ok {
 
 		err := r.SetFont(finfo.Font, "", finfo.Size)
@@ -36,6 +37,20 @@ func (r *Render) Text(key string, text string) error {
 		}
 
 		err = r.Insert(text, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return ErrNotFoundKey
+}
+
+//ImgBase64 image base 64
+func (r *Render) ImgBase64(key string, base64 string) error {
+	//fmt.Println("xxxx")
+	if finfo, ok := r.finfoMap[key]; ok {
+		err := r.InsertImgBase64(base64, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H)
 		if err != nil {
 			return err
 		}
