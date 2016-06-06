@@ -51,7 +51,7 @@ func (p *PDFData) maxID() int {
 func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
 	var err error
 	var cw crawl
-	cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources")
+	cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "XObject")
 	err = cw.run()
 	if err != nil {
 		return err
@@ -60,6 +60,7 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
 	found := false
 	var xObjectVal string
 	for _, r := range cw.results {
+		fmt.Printf("%#v\n\n", r)
 		xObjectVal, err = r.valOf("XObject")
 		if err == ErrCrawlResultValOfNotFound {
 			continue
@@ -70,10 +71,24 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
 		found = true
 	}
 
-	if !found {
-		_ = xObjectVal
+	var xobjs crawlResultXObjects
+	xObjChar := "I"
+	if found && strings.TrimSpace(xObjectVal) != "" {
+		fmt.Printf("xObjectVal = %s\n", xObjectVal)
+		propVal := []byte(xObjectVal)
+		xobjs.parse(&propVal)
 	}
 
+	i := 0
+	max := len(pdfImgs)
+	for i < max {
+		var xobj crawlResultXObject
+		xobj.xObjChar = xObjChar
+		xobj.xObjIndex = i + 1
+		xobj.xObjObjID = pdfImgs[i].objID
+		xobjs = append(xobjs, xobj)
+		i++
+	}
 	return nil
 }
 

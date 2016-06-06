@@ -229,11 +229,12 @@ func (i *PDFt) build() (*PDFData, int, error) {
 		newpdf.put(dictionaryObj)
 	}
 
-	for _, pdfImg := range i.pdfImgs {
+	for j, pdfImg := range i.pdfImgs {
 		nextID++
 		var obj PDFObjData
 		obj.objID = nextID
 		obj.data = pdfImg.imgObj.GetObjBuff().Bytes()
+		i.pdfImgs[j].objID = obj.objID
 		newpdf.put(obj)
 	}
 
