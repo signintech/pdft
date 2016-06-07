@@ -9,8 +9,10 @@ import (
 
 //PDFImageData pdf img
 type PDFImageData struct {
-	objID  int
-	imgObj gopdf.ImageObj
+	objID     int
+	imgObj    gopdf.ImageObj
+	xObjChar  string
+	xObjIndex int
 }
 
 func (p *PDFImageData) setImgBase64(base64str string) error {

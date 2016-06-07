@@ -28,6 +28,16 @@ func (c *crawlResult) setValOf(key string, val string) error {
 	return loopSetValOf(c, key, val)
 }
 
+func (c *crawlResult) add(key string, val string) error {
+	var item crawlResultItem
+	item.key = key
+	item.valStr = val
+	item.typeOfVal = typeOfValStr
+	fmt.Printf("key===%s\n", key)
+	c.items = append(c.items, item)
+	return nil
+}
+
 func loopSetValOf(cr *crawlResult, key string, val string) error {
 	for i := range cr.items {
 		item := &cr.items[i]

@@ -48,6 +48,10 @@ type current struct {
 	lineWidth float64
 }
 
+func pageHeight() float64 {
+	return 841.89
+}
+
 //ShowCellBorder  show cell of border
 func (i *PDFt) ShowCellBorder(isShow bool) {
 	var clw ContentLineStyle
@@ -118,6 +122,14 @@ func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float
 	}
 	i.pdfImgs = append(i.pdfImgs, pdfimg)
 
+	var ct contentImgBase64
+	ct.pageNum = pageNum
+	ct.x = x
+	ct.y = y
+	ct.h = h
+	ct.w = w
+	ct.refPdfimg = &i.pdfImgs[len(i.pdfImgs)-1]
+	i.contenters = append(i.contenters, &ct)
 	return nil
 }
 
@@ -243,6 +255,7 @@ func (i *PDFt) build() (*PDFData, int, error) {
 		return nil, 0, err
 	}
 
+	fmt.Printf("%s\n", i.pdfImgs[0].xObjChar)
 	err = newpdf.injectContentToPDF(&i.contenters)
 	if err != nil {
 		return nil, 0, err

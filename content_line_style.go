@@ -13,7 +13,6 @@ type ContentLineStyle struct {
 
 func (c *ContentLineStyle) toSteram() (*bytes.Buffer, error) {
 	var buff bytes.Buffer
-	//fmt.Printf("-------------------\n")
 	switch c.lineType {
 	case "dashed":
 		buff.WriteString(fmt.Sprint("[5] 2 d\n"))
@@ -22,7 +21,6 @@ func (c *ContentLineStyle) toSteram() (*bytes.Buffer, error) {
 	default:
 		buff.WriteString(fmt.Sprint("[] 0 d\n"))
 	}
-
 	buff.WriteString(fmt.Sprintf("%.2f w\n", c.width))
 	return &buff, nil
 }

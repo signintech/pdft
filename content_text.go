@@ -44,7 +44,7 @@ func (c *ContentText) toSteram() (*bytes.Buffer, error) {
 		c.x,
 		c.y,
 		&c.pdfFontData.font,
-		841.89,
+		pageHeight(),
 		gopdf.ContentTypeText,
 		gopdf.CellOption{
 			Align:  c.align,

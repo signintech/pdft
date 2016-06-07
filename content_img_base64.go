@@ -1,14 +1,18 @@
 package pdft
 
-import "bytes"
+import (
+	"bytes"
+	"fmt"
+)
 
 type contentImgBase64 struct {
-	base64  string
-	pageNum int
-	x       float64
-	y       float64
-	w       float64
-	h       float64
+	base64    string
+	pageNum   int
+	x         float64
+	y         float64
+	w         float64
+	h         float64
+	refPdfimg *PDFImageData
 }
 
 func (c *contentImgBase64) page() int {
@@ -16,20 +20,8 @@ func (c *contentImgBase64) page() int {
 }
 
 func (c *contentImgBase64) toSteram() (*bytes.Buffer, error) {
-
-	/*r := base64.NewDecoder(base64.StdEncoding, bytes.NewBuffer([]byte(c.base64)))
-
-	var imgObj gopdf.ImageObj
-	err := imgObj.SetImage(r)
-	if err != nil {
-		return nil, err
-	}
-
-	err = imgObj.Build()
-	if err != nil {
-		return nil, err
-	}
-
-	return imgObj.GetObjBuff(), nil*/
-	return nil, nil
+	var buff bytes.Buffer
+	fmt.Printf("xObjChar = %s\n", c.refPdfimg.xObjChar)
+	buff.WriteString(fmt.Sprintf("q %0.2f 0 0 %0.2f %0.2f %0.2f cm /%s%d Do Q\n", c.w, c.h, c.x, pageHeight()-(c.y+c.h), c.refPdfimg.xObjChar, c.refPdfimg.xObjIndex))
+	return &buff, nil
 }

@@ -60,35 +60,84 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
 	found := false
 	var xObjectVal string
 	for _, r := range cw.results {
-		fmt.Printf("%#v\n\n", r)
 		xObjectVal, err = r.valOf("XObject")
 		if err == ErrCrawlResultValOfNotFound {
 			continue
 		} else if err != nil {
 			return err
 		}
-		//fmt.Printf("objID=%d %s\n", objID, xObjectVal)
 		found = true
 	}
 
 	var xobjs crawlResultXObjects
+	var xObjIndex int
 	xObjChar := "I"
 	if found && strings.TrimSpace(xObjectVal) != "" {
-		fmt.Printf("xObjectVal = %s\n", xObjectVal)
 		propVal := []byte(xObjectVal)
 		xobjs.parse(&propVal)
+		if len(xobjs) > 0 {
+			xObjChar = xobjs[len(xobjs)-1].xObjChar
+			xObjIndex = xobjs[len(xobjs)-1].xObjIndex
+		}
 	}
 
 	i := 0
 	max := len(pdfImgs)
 	for i < max {
+		objID := pdfImgs[i].objID
+		pdfImgs[i].xObjChar = xObjChar
+		pdfImgs[i].xObjIndex = xObjIndex + i + 1
+
 		var xobj crawlResultXObject
 		xobj.xObjChar = xObjChar
-		xobj.xObjIndex = i + 1
-		xobj.xObjObjID = pdfImgs[i].objID
+		xobj.xObjIndex = xObjIndex + i + 1
+		xobj.xObjObjID = objID
 		xobjs = append(xobjs, xobj)
 		i++
 	}
+
+	objMustReplaces := make(map[int]string)
+	if found {
+		for objID, r := range cw.results {
+			_, err = r.valOf("XObject")
+			if err == ErrCrawlResultValOfNotFound {
+				continue
+			} else if err != nil {
+				return err
+			}
+			r.setValOf("XObject", fmt.Sprintf("<<%s>>\n", xobjs.String()))
+			objMustReplaces[objID] = r.String()
+		}
+	} else {
+		//
+		var cwres crawl
+		cwres.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources")
+		err = cwres.run()
+		if err != nil {
+			return err
+		}
+		for objID, r := range cwres.results {
+			res, err := r.valOf("Resources")
+			if err == ErrCrawlResultValOfNotFound {
+				continue
+			} else if err != nil {
+				return err
+			}
+
+			res = strings.TrimSpace(res)
+			res = fmt.Sprintf("%s /XObject <<%s>>", res[2:len(res)-2], xobjs.String())
+			r.setValOf("Resources", fmt.Sprintf("<<%s>>\n", res))
+			//r.add("XObject", fmt.Sprintf("<<%s>>\n", xobjs.String()))
+			//fmt.Printf("\n%d\n\n%#v\n\n%s\n", objID, r, r.String())
+			objMustReplaces[objID] = r.String()
+			break
+		}
+	}
+
+	for objID := range objMustReplaces {
+		p.getObjByID(objID).data = []byte("<<\n" + objMustReplaces[objID] + ">>\n")
+	}
+
 	return nil
 }
 
@@ -153,7 +202,6 @@ func (p *PDFData) injectFontsToPDF(fontDatas map[string]*PDFFontData) error {
 	}
 
 	for objID := range objMustReplaces {
-
 		p.getObjByID(objID).data = []byte("<<\n" + objMustReplaces[objID] + ">>\n")
 	}
 
