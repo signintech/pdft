@@ -127,8 +127,6 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
 			res = strings.TrimSpace(res)
 			res = fmt.Sprintf("%s /XObject <<%s>>", res[2:len(res)-2], xobjs.String())
 			r.setValOf("Resources", fmt.Sprintf("<<%s>>\n", res))
-			//r.add("XObject", fmt.Sprintf("<<%s>>\n", xobjs.String()))
-			//fmt.Printf("\n%d\n\n%#v\n\n%s\n", objID, r, r.String())
 			objMustReplaces[objID] = r.String()
 			break
 		}

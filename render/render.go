@@ -1,13 +1,14 @@
 package render
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/signintech/pdft"
 )
 
 //ErrNotFoundKey key not found
-var ErrNotFoundKey = errors.New("not found key")
+//var ErrNotFoundKey = errors.New("not found key")
+var errNotFoundKey = "Not found key %s"
 
 //NewRender create new render
 func NewRender(pdfTmpl string, finfos FieldInfos) (*Render, error) {
@@ -43,7 +44,7 @@ func (r *Render) Text(key string, text string) error {
 		return nil
 	}
 
-	return ErrNotFoundKey
+	return fmt.Errorf(errNotFoundKey, key)
 }
 
 //ImgBase64 image base 64
@@ -56,7 +57,7 @@ func (r *Render) ImgBase64(key string, base64 string) error {
 		}
 		return nil
 	}
-	return ErrNotFoundKey
+	return fmt.Errorf(errNotFoundKey, key)
 }
 
 //ShowDesignView for debug
