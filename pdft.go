@@ -255,7 +255,7 @@ func (i *PDFt) build() (*PDFData, int, error) {
 		return nil, 0, err
 	}
 
-	fmt.Printf("%s\n", i.pdfImgs[0].xObjChar)
+	//fmt.Printf("%s\n", i.pdfImgs[0].xObjChar)
 	err = newpdf.injectContentToPDF(&i.contenters)
 	if err != nil {
 		return nil, 0, err
