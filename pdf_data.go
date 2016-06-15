@@ -207,6 +207,7 @@ func (p *PDFData) injectFontsToPDF(fontDatas map[string]*PDFFontData) error {
 }
 
 func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
+
 	var err error
 	var cw crawl
 	cw.set(p, p.trailer.rootObjID, "Pages", "Kids")

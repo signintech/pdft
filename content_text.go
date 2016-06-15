@@ -29,13 +29,18 @@ func (c *ContentText) toSteram() (*bytes.Buffer, error) {
 		border = Left | Right | Top | Bottom
 	}
 
+	var rgb gopdf.Rgb
+	rgb.SetR(1)
+	rgb.SetG(1)
+	rgb.SetB(1)
+
 	var cc gopdf.CacheContent
 	cc.Setup(
 		&gopdf.Rect{
 			W: c.w,
 			H: c.h,
 		},
-		gopdf.Rgb{},
+		rgb,
 		1.0,
 		c.pdfFontData.fontIndex(),
 		c.fontSize,
