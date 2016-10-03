@@ -84,27 +84,27 @@ func (p *PDFFontData) build() (int, error) {
 	p.dictionary.SetPtrToSubsetFontObj(&p.font)
 
 	var err error
-	err = p.font.Build()
+	err = p.font.Build(p.fontID)
 	if err != nil {
 		return 0, err
 	}
 
-	err = p.cid.Build()
+	err = p.cid.Build(p.cidID)
 	if err != nil {
 		return 0, err
 	}
 
-	err = p.unicodeMap.Build()
+	err = p.unicodeMap.Build(p.unicodeMapID)
 	if err != nil {
 		return 0, err
 	}
 
-	err = p.fontDesc.Build()
+	err = p.fontDesc.Build(p.fontDescID)
 	if err != nil {
 		return 0, err
 	}
 
-	err = p.dictionary.Build()
+	err = p.dictionary.Build(p.dictionaryID)
 	if err != nil {
 		return 0, err
 	}

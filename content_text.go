@@ -8,18 +8,27 @@ import (
 
 //ContentText text in pdf
 type ContentText struct {
-	text        string
-	fontName    string
-	fontStyle   string
-	fontSize    int
-	pageNum     int
-	x           float64
-	y           float64
-	pdfFontData *PDFFontData
-	w           float64
-	h           float64
-	align       int
-	lineWidth   float64
+	text          string
+	fontName      string
+	fontStyle     string
+	fontSize      int
+	pageNum       int
+	x             float64
+	y             float64
+	pdfFontData   *PDFFontData
+	w             float64
+	h             float64
+	align         int
+	lineWidth     float64
+	pdfProtection *gopdf.PDFProtection
+}
+
+func (c *ContentText) setProtection(p *gopdf.PDFProtection) {
+	c.pdfProtection = p
+}
+
+func (c *ContentText) protection() *gopdf.PDFProtection {
+	return c.pdfProtection
 }
 
 func (c *ContentText) toSteram() (*bytes.Buffer, error) {
@@ -59,7 +68,7 @@ func (c *ContentText) toSteram() (*bytes.Buffer, error) {
 	)
 
 	cc.WriteTextToContent(c.text)
-	buff, err := cc.ToStream()
+	buff, err := cc.ToStream(c.protection())
 	if err != nil {
 		return nil, err
 	}

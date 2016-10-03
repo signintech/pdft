@@ -34,11 +34,12 @@ const Middle = gopdf.Middle //100000
 
 //PDFt inject text to pdf
 type PDFt struct {
-	pdf        PDFData
-	fontDatas  map[string]*PDFFontData
-	pdfImgs    []PDFImageData
-	curr       current
-	contenters []Contenter
+	pdf           PDFData
+	fontDatas     map[string]*PDFFontData
+	pdfImgs       []PDFImageData
+	curr          current
+	contenters    []Contenter
+	pdfProtection *gopdf.PDFProtection
 }
 
 type current struct {
@@ -50,6 +51,10 @@ type current struct {
 
 func pageHeight() float64 {
 	return 841.89
+}
+
+func (i *PDFt) protection() *gopdf.PDFProtection {
+	return i.pdfProtection
 }
 
 //ShowCellBorder  show cell of border
@@ -104,6 +109,7 @@ func (i *PDFt) Insert(text string, pageNum int, x float64, y float64, w float64,
 	ct.h = h
 	ct.align = align
 	ct.lineWidth = i.curr.lineWidth
+	ct.setProtection(i.protection())
 	if _, have := i.fontDatas[ct.fontName]; !have {
 		return ErrFontNameNotFound
 	}

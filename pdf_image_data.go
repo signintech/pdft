@@ -28,7 +28,7 @@ func (p *PDFImageData) setImgBase64(base64str string) error {
 		return err
 	}
 
-	err = p.imgObj.Build()
+	err = p.imgObj.Build(p.objID)
 	if err != nil {
 		return err
 	}
