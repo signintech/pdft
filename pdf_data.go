@@ -23,6 +23,11 @@ type TrailerData struct {
 	rootObjID int
 }
 
+//Len count
+func (p *PDFData) Len() int {
+	return len(p.objIDs)
+}
+
 func (p *PDFData) put(pdfobj PDFObjData) {
 	p.objIDs = append(p.objIDs, pdfobj.objID)
 	p.objs = append(p.objs, pdfobj)

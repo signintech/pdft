@@ -1,6 +1,13 @@
 package pdft
 
-import "errors"
+import (
+	"bytes"
+	"crypto/rc4"
+	"errors"
+	"fmt"
+
+	"github.com/signintech/gopdf"
+)
 
 //PDFObjData byte of obj
 type PDFObjData struct {
@@ -46,4 +53,42 @@ func (p *PDFObjData) readProperties() (*PDFObjPropertiesData, error) {
 		return nil, err
 	}
 	return &props, nil
+}
+
+func (p *PDFObjData) encrypt(protection *gopdf.PDFProtection) error {
+	//fmt.Printf("=====\n%s\n\n", string(p.data))
+	stream := []byte("stream\n")
+	endstream := []byte("endstream")
+	sIdx := bytes.Index(p.data, stream)
+	if sIdx != -1 {
+		eIdx := bytes.LastIndex(p.data, endstream)
+		head := p.data[0:sIdx]
+		body := p.data[sIdx+len(stream) : eIdx]
+		body, err := rc4Cip(protection.Objectkey(p.objID), body)
+		if err != nil {
+			return err
+		}
+		_ = body
+		_ = head
+
+		fmt.Printf("objID=%d\n%s\n\n", p.objID, string(head))
+
+		var data []byte
+		data = append(head, stream...)
+		data = append(data, body...)
+		data = append(data, []byte("\n")...)
+		data = append(data, endstream...)
+		p.data = data
+	}
+	return nil
+}
+
+func rc4Cip(key []byte, src []byte) ([]byte, error) {
+	cip, err := rc4.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	dest := make([]byte, len(src))
+	cip.XORKeyStream(dest, src)
+	return dest, nil
 }

@@ -213,7 +213,7 @@ func (i *PDFt) build() (*PDFData, int, error) {
 		}
 	}
 
-	newpdf := i.pdf
+	newpdf := i.pdf //copy
 
 	err = newpdf.injectFontsToPDF(i.fontDatas)
 	if err != nil {
@@ -261,16 +261,43 @@ func (i *PDFt) build() (*PDFData, int, error) {
 		return nil, 0, err
 	}
 
-	//fmt.Printf("%s\n", i.pdfImgs[0].xObjChar)
 	err = newpdf.injectContentToPDF(&i.contenters)
 	if err != nil {
 		return nil, 0, err
+	}
+
+	//set for protection
+	if i.protection() != nil {
+		max := newpdf.Len()
+		x := 0
+		for x < max {
+			newpdf.objs[x].encrypt(i.protection())
+			x++
+		}
 	}
 
 	return &newpdf, nextID, nil
 }
 
 func (i *PDFt) toStream(newpdf *PDFData, lastID int) (*bytes.Buffer, error) {
+
+	//set for protection
+	encryptionObjID := -1
+	if i.protection() != nil {
+		lastID++
+		encryptionObjID = lastID
+		enObj := i.protection().EncryptionObj()
+		err := enObj.Build(lastID)
+		if err != nil {
+			return nil, err
+		}
+		buff := enObj.GetObjBuff()
+		var enPDFObjData PDFObjData
+		enPDFObjData.data = buff.Bytes()
+		enPDFObjData.objID = lastID
+		newpdf.put(enPDFObjData)
+	}
+
 	var buff bytes.Buffer
 	buff.WriteString("%PDF-1.7\n\n")
 	var xrefs []int
@@ -280,12 +307,12 @@ func (i *PDFt) toStream(newpdf *PDFData, lastID int) (*bytes.Buffer, error) {
 		buff.WriteString(strings.TrimSpace(string(obj.data)))
 		buff.WriteString("\nendobj\n")
 	}
-	i.xref(xrefs, &buff, lastID+1, newpdf.trailer.rootObjID)
-	//fmt.Printf("\n\n%s\n\n", buff.String())
+	i.xref(xrefs, &buff, lastID+1, newpdf.trailer.rootObjID, encryptionObjID)
+
 	return &buff, nil
 }
 
-func (i *PDFt) xref(linelens []int, buff *bytes.Buffer, size int, rootID int) {
+func (i *PDFt) xref(linelens []int, buff *bytes.Buffer, size int, rootID int, encryptionObjID int) {
 	xrefbyteoffset := buff.Len()
 	buff.WriteString("\nxref\n")
 	buff.WriteString(fmt.Sprintf("0 %d\r\n", size))
@@ -301,6 +328,12 @@ func (i *PDFt) xref(linelens []int, buff *bytes.Buffer, size int, rootID int) {
 	buff.WriteString("<<\n")
 	buff.WriteString(fmt.Sprintf("/Size %d\n", size))
 	buff.WriteString(fmt.Sprintf("/Root %d 0 R\n", rootID))
+	if i.protection() != nil {
+
+		buff.WriteString(fmt.Sprintf("/Encrypt %d 0 R\n", encryptionObjID))
+		buff.WriteString("/ID [()()]\n")
+
+	}
 	buff.WriteString(">>\n")
 
 	buff.WriteString("startxref\n")
@@ -314,4 +347,19 @@ func (i *PDFt) formatXrefline(n int) string {
 		str = "0" + str
 	}
 	return str
+}
+
+//SetProtection set pdf protection
+func (i *PDFt) SetProtection(
+	permissions int,
+	userPass []byte,
+	ownerPass []byte,
+) error {
+	var p gopdf.PDFProtection
+	err := p.SetProtection(permissions, userPass, ownerPass)
+	if err != nil {
+		return err
+	}
+	i.pdfProtection = &p
+	return nil
 }
