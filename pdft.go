@@ -88,7 +88,7 @@ func (i *PDFt) Open(filepath string) error {
 	if err != nil {
 		return err
 	}
-
+	//fmt.Printf("%d\n\n", i.pdf.Len())
 	i.ShowCellBorder(false)
 
 	return nil
@@ -329,10 +329,8 @@ func (i *PDFt) xref(linelens []int, buff *bytes.Buffer, size int, rootID int, en
 	buff.WriteString(fmt.Sprintf("/Size %d\n", size))
 	buff.WriteString(fmt.Sprintf("/Root %d 0 R\n", rootID))
 	if i.protection() != nil {
-
 		buff.WriteString(fmt.Sprintf("/Encrypt %d 0 R\n", encryptionObjID))
 		buff.WriteString("/ID [()()]\n")
-
 	}
 	buff.WriteString(">>\n")
 

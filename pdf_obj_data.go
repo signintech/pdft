@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/rc4"
 	"errors"
-	"fmt"
 
 	"github.com/signintech/gopdf"
 )
@@ -40,7 +39,6 @@ func (p *PDFObjData) parse(raw *[]byte, stratoffset int) error {
 
 	p.objID = objID
 	p.data = data
-	//fmt.Printf("%s\n", string(data))
 
 	return nil
 }
@@ -56,29 +54,31 @@ func (p *PDFObjData) readProperties() (*PDFObjPropertiesData, error) {
 }
 
 func (p *PDFObjData) encrypt(protection *gopdf.PDFProtection) error {
-	//fmt.Printf("=====\n%s\n\n", string(p.data))
-	stream := []byte("stream\n")
+
+	stream := []byte("stream")
 	endstream := []byte("endstream")
-	sIdx := bytes.Index(p.data, stream)
-	if sIdx != -1 {
-		eIdx := bytes.LastIndex(p.data, endstream)
-		head := p.data[0:sIdx]
-		body := p.data[sIdx+len(stream) : eIdx]
-		body, err := rc4Cip(protection.Objectkey(p.objID), body)
+	start := bytes.Index(p.data, stream)
+	if start != -1 {
+		end := bytes.LastIndex(p.data, endstream)
+
+		var head, body bytes.Buffer
+		head.Write(p.data[0:start])
+		body.Write(p.data[start+len(stream) : end])
+		tmp := bytes.Trim(body.Bytes(), "\r\n")
+		tmp = bytes.Trim(tmp, "\n")
+		bodyRc4, err := rc4Cip(protection.Objectkey(p.objID), tmp)
 		if err != nil {
 			return err
 		}
-		_ = body
-		_ = head
 
-		fmt.Printf("objID=%d\n%s\n\n", p.objID, string(head))
-
-		var data []byte
-		data = append(head, stream...)
-		data = append(data, body...)
-		data = append(data, []byte("\n")...)
-		data = append(data, endstream...)
-		p.data = data
+		var data bytes.Buffer
+		data.Write(head.Bytes())
+		data.Write(stream)
+		data.WriteString("\n")
+		data.Write(bodyRc4)
+		data.WriteString("\n")
+		data.Write(endstream)
+		p.data = data.Bytes()
 	}
 	return nil
 }
