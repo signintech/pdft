@@ -3,6 +3,8 @@ package render
 import (
 	"fmt"
 
+	"log"
+
 	"github.com/signintech/pdft"
 )
 
@@ -31,7 +33,6 @@ type Render struct {
 func (r *Render) Text(key string, text string) error {
 
 	if finfo, ok := r.finfoMap[key]; ok {
-
 		err := r.SetFont(finfo.Font, "", finfo.Size)
 		if err != nil {
 			return err
@@ -44,7 +45,9 @@ func (r *Render) Text(key string, text string) error {
 		return nil
 	}
 
-	return fmt.Errorf(errNotFoundKey, key)
+	log.Printf("Warr: Not found key %s", key)
+	return nil
+	//return fmt.Errorf(errNotFoundKey, key)
 }
 
 //ImgBase64 image base 64
