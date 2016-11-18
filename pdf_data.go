@@ -111,10 +111,8 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
 			} else if err != nil {
 				return err
 			}
-			fmt.Printf("<<%s>>\n", xobjs.String())
 			r.setValOf("XObject", fmt.Sprintf("<<%s>>\n", xobjs.String()))
 			objMustReplaces[objID] = r.String()
-
 		}
 	} else {
 		var cwres crawl
