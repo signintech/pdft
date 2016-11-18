@@ -58,11 +58,17 @@ func loopValOf(cr *crawlResult, key string) (string, error) {
 	for _, item := range cr.items {
 		if item.typeOfVal == typeOfValStr {
 			if item.key == key {
-				v, _ := item.getValStr()
+				v, err := item.getValStr()
+				if err != nil {
+					return "", err
+				}
 				return v, nil
 			}
 		} else if item.typeOfVal == typeOfValCr {
-			v, _ := item.getValCr()
+			v, err := item.getValCr()
+			if err != nil {
+				return "", err
+			}
 			return loopValOf(v, key)
 		}
 	}

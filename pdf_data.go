@@ -65,12 +65,13 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
 	found := false
 	var xObjectVal string
 	for _, r := range cw.results {
-		xObjectVal, err = r.valOf("XObject")
+		tmp, err := r.valOf("XObject")
 		if err == ErrCrawlResultValOfNotFound {
 			continue
 		} else if err != nil {
 			return err
 		}
+		xObjectVal = tmp
 		found = true
 	}
 
@@ -110,11 +111,12 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
 			} else if err != nil {
 				return err
 			}
+			fmt.Printf("<<%s>>\n", xobjs.String())
 			r.setValOf("XObject", fmt.Sprintf("<<%s>>\n", xobjs.String()))
 			objMustReplaces[objID] = r.String()
+
 		}
 	} else {
-		//
 		var cwres crawl
 		cwres.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources")
 		err = cwres.run()
