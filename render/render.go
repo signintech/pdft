@@ -52,7 +52,7 @@ func (r *Render) Text(key string, text string) error {
 
 //ImgBase64 image base 64
 func (r *Render) ImgBase64(key string, base64 string) error {
-	//fmt.Println("xxxx")
+	//fmt.Printf("ImgBase64 %s\n\n", base64)
 	if finfo, ok := r.finfoMap[key]; ok {
 		err := r.InsertImgBase64(base64, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H)
 		if err != nil {

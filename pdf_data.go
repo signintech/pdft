@@ -53,7 +53,7 @@ func (p *PDFData) maxID() int {
 	return max
 }
 
-func (p *PDFData) injectImgsToPDF(pdfImgs []PDFImageData) error {
+func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 
 	var err error
 	var cw crawl

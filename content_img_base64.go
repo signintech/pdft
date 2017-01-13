@@ -21,7 +21,7 @@ func (c *contentImgBase64) page() int {
 
 func (c *contentImgBase64) toSteram() (*bytes.Buffer, error) {
 	var buff bytes.Buffer
-	fmt.Printf("xObjChar = %s\n", c.refPdfimg.xObjChar)
+	fmt.Printf("xObjChar = %d\n", c.refPdfimg.objID)
 	buff.WriteString(fmt.Sprintf("q %0.2f 0 0 %0.2f %0.2f %0.2f cm /%s%d Do Q\n", c.w, c.h, c.x, pageHeight()-(c.y+c.h), c.refPdfimg.xObjChar, c.refPdfimg.xObjIndex))
 	return &buff, nil
 }

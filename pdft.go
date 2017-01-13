@@ -36,7 +36,7 @@ const Middle = gopdf.Middle //100000
 type PDFt struct {
 	pdf           PDFData
 	fontDatas     map[string]*PDFFontData
-	pdfImgs       []PDFImageData
+	pdfImgs       []*PDFImageData
 	curr          current
 	contenters    []Contenter
 	pdfProtection *gopdf.PDFProtection
@@ -126,7 +126,8 @@ func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float
 	if err != nil {
 		return err
 	}
-	i.pdfImgs = append(i.pdfImgs, pdfimg)
+	i.pdfImgs = append(i.pdfImgs, &pdfimg)
+	//fmt.Printf("-->%d\n", len(i.pdfImgs))
 
 	var ct contentImgBase64
 	ct.pageNum = pageNum
@@ -134,7 +135,7 @@ func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float
 	ct.y = y
 	ct.h = h
 	ct.w = w
-	ct.refPdfimg = &i.pdfImgs[len(i.pdfImgs)-1]
+	ct.refPdfimg = &pdfimg //i.pdfImgs[len(i.pdfImgs)-1]
 	i.contenters = append(i.contenters, &ct)
 	return nil
 }
@@ -253,6 +254,7 @@ func (i *PDFt) build() (*PDFData, int, error) {
 		obj.objID = nextID
 		obj.data = pdfImg.imgObj.GetObjBuff().Bytes()
 		i.pdfImgs[j].objID = obj.objID
+		//fmt.Printf("---->%d\n", obj.objID)
 		newpdf.put(obj)
 	}
 
