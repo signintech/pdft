@@ -302,30 +302,52 @@ func (i *PDFt) toStream(newpdf *PDFData, lastID int) (*bytes.Buffer, error) {
 
 	var buff bytes.Buffer
 	buff.WriteString("%PDF-1.7\n\n")
-	var xrefs []int
+	xrefs := make(map[int]int)
 	for _, obj := range newpdf.objs {
-		xrefs = append(xrefs, buff.Len())
+		//xrefs = append(xrefs, buff.Len())
+		xrefs[obj.objID] = buff.Len()
 		buff.WriteString(fmt.Sprintf("\n%d 0 obj\n", obj.objID))
 		buff.WriteString(strings.TrimSpace(string(obj.data)))
 		buff.WriteString("\nendobj\n")
 	}
-	i.xref(xrefs, &buff, lastID+1, newpdf.trailer.rootObjID, encryptionObjID)
+	i.xref(xrefs, &buff, lastID, newpdf.trailer.rootObjID, encryptionObjID)
 
 	return &buff, nil
 }
 
-func (i *PDFt) xref(linelens []int, buff *bytes.Buffer, size int, rootID int, encryptionObjID int) {
+type xrefrow struct {
+	offset int
+	gen    string
+	flag   string
+}
+
+func (i *PDFt) xref(linelens map[int]int, buff *bytes.Buffer, size int, rootID int, encryptionObjID int) {
 	xrefbyteoffset := buff.Len()
+
+	//start xref
 	buff.WriteString("\nxref\n")
 	buff.WriteString(fmt.Sprintf("0 %d\r\n", size))
-	buff.WriteString("0000000000 65535 f\n")
-	j := 0
-	max := len(linelens)
-	for j < max {
-		linelen := linelens[j]
-		buff.WriteString(i.formatXrefline(linelen) + " 00000 n\n")
+	var xrefrows []xrefrow
+	xrefrows = append(xrefrows, xrefrow{offset: 0, flag: "f", gen: "65535"})
+	lastIndexOfF := 0
+	j := 1
+	for j < size {
+		if linelen, ok := linelens[j]; ok {
+			xrefrows = append(xrefrows, xrefrow{offset: linelen, flag: "n", gen: "00000"})
+		} else {
+			xrefrows = append(xrefrows, xrefrow{offset: 0, flag: "f", gen: "65535"})
+			offset := len(xrefrows) - 1
+			xrefrows[lastIndexOfF].offset = offset
+			lastIndexOfF = offset
+		}
 		j++
 	}
+
+	for _, xrefrow := range xrefrows {
+		buff.WriteString(i.formatXrefline(xrefrow.offset) + " " + xrefrow.gen + " " + xrefrow.flag + "\n")
+	}
+	//end xref
+
 	buff.WriteString("trailer\n")
 	buff.WriteString("<<\n")
 	buff.WriteString(fmt.Sprintf("/Size %d\n", size))
