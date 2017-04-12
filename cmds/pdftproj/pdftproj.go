@@ -1,4 +1,4 @@
-package design
+package main
 
 func main() {
 
