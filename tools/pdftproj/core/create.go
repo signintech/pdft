@@ -104,5 +104,6 @@ func (c CreateSubCmd) isDirEmpty(path string) (bool, error) {
 }
 
 func (c CreateSubCmd) createTmplJSON(path string) error {
+
 	return nil
 }
