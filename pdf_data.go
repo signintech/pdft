@@ -56,8 +56,47 @@ func (p *PDFData) maxID() int {
 func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 
 	var err error
+	rootOfXObjectID := -1
+	resourcesContent := ""
+	var cwRes crawl
+	cwRes.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources")
+	err = cwRes.run()
+	if err != nil {
+		return err
+	}
+	foundRes := false
+	for resID, r := range cwRes.results {
+		resources, err := r.valOf("Resources")
+		if err == ErrCrawlResultValOfNotFound {
+			continue
+		} else if err != nil {
+			return err
+		} else {
+			foundRes = true
+			resourcesID, _, err := readObjIDFromDictionary(resources)
+			if err == ErrorObjectIDNotFound {
+				rootOfXObjectID = resID
+				resourcesContent = resources
+			} else if err != nil {
+				return err
+			} else {
+				rootOfXObjectID = resourcesID
+				data := p.getObjByID(resourcesID)
+				if data != nil {
+					resourcesContent = string(data.data)
+				}
+			}
+			break
+		}
+	}
+
+	if !foundRes {
+		return errors.New("not found /Resources in /Type/Pages")
+	}
+
 	var cw crawl
-	cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "XObject")
+	//cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "XObject")
+	cw.set(p, rootOfXObjectID, "XObject")
 	err = cw.run()
 	if err != nil {
 		return err
@@ -121,28 +160,14 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 			objMustReplaces[objID] = r.String()
 		}
 	} else {
-
-		var cwres crawl
-		cwres.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources")
-		err = cwres.run()
-		if err != nil {
-			return err
-		}
-
-		for objID, r := range cwres.results {
-			res, err := r.valOf("Resources")
-			if err == ErrCrawlResultValOfNotFound {
-				continue
-			} else if err != nil {
-				return err
-			}
-
-			res = strings.TrimSpace(res)
-			res = fmt.Sprintf("%s /XObject <<%s>>", res[2:len(res)-2], xobjs.String())
-			r.setValOf("Resources", fmt.Sprintf("<<%s>>\n", res))
+		for objID, r := range cw.results {
+			res := strings.TrimSpace(resourcesContent)
+			res = fmt.Sprintf("<<%s>>\n", xobjs.String())
+			r.add("XObject", res)
 			objMustReplaces[objID] = r.String()
-			break
+			fmt.Printf("%s\n", r.String())
 		}
+		แก้ตรงนี้
 	}
 
 	for objID := range objMustReplaces {
@@ -240,6 +265,9 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 		if err != nil {
 			return err
 		}
+
+		//fmt.Printf("buff=%s\n\n", buff.String())
+
 		_, err = buff.WriteTo(pageBuffs[pageNum])
 		if err != nil {
 			return err
@@ -331,6 +359,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 			if err != nil {
 				return err
 			}
+			//fmt.Printf("stm=%s\n\n", stm.String())
 
 			if _, ok := pageBuffs[pageIndex+1]; ok {
 				stm.WriteString("\n")

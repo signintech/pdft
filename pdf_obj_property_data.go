@@ -178,16 +178,19 @@ func readObjIDFromDictionaryArr(str string) ([]int, []int, error) {
 	return objIDs, revisions, nil
 }
 
+//ErrorObjectIDNotFound Object ID not found
+var ErrorObjectIDNotFound = errors.New("Object ID not found")
+
 func readObjIDFromDictionary(str string) (int, int, error) {
 
 	str = strings.TrimSpace(str)
 	if str == "" {
-		return 0, 0, errors.New("Object ID not found")
+		return 0, 0, ErrorObjectIDNotFound
 	}
 
 	tokens := strings.Split(str, " ")
 	if len(tokens) != 3 {
-		return 0, 0, errors.New("Object ID not found")
+		return 0, 0, ErrorObjectIDNotFound
 	}
 
 	id, err := strconv.Atoi(strings.TrimSpace(tokens[0]))

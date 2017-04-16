@@ -89,7 +89,7 @@ func (i *PDFt) Open(filepath string) error {
 		return err
 	}
 	//fmt.Printf("%s\n", i.pdf.hash())
-	i.ShowCellBorder(false)
+	//i.ShowCellBorder(false)
 
 	return nil
 }
@@ -139,6 +139,37 @@ func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float
 	i.contenters = append(i.contenters, &ct)
 	return nil
 }
+
+//InsertImg insert img
+func (i *PDFt) InsertImg(img []byte, pageNum int, x float64, y float64, w float64, h float64) error {
+
+	var pdfimg PDFImageData
+	err := pdfimg.setImg(img)
+	if err != nil {
+		return err
+	}
+	i.pdfImgs = append(i.pdfImgs, &pdfimg)
+	//fmt.Printf("-->%d\n", len(i.pdfImgs))
+
+	var ct contentImgBase64
+	ct.pageNum = pageNum
+	ct.x = x
+	ct.y = y
+	ct.h = h
+	ct.w = w
+	ct.refPdfimg = &pdfimg //i.pdfImgs[len(i.pdfImgs)-1]
+	i.contenters = append(i.contenters, &ct)
+	//fmt.Printf("append(i.contenters, &ct) %d\n", len(i.contenters))
+	//i.insertContenters(0, &ct)
+	return nil
+}
+
+/*
+func (i *PDFt) insertContenters(index int, src Contenter) {
+	i.contenters = append(i.contenters, nil)
+	copy(i.contenters[index+1:], i.contenters[index:])
+	i.contenters[index] = src
+}*/
 
 //AddFont add ttf font
 func (i *PDFt) AddFont(name string, ttfpath string) error {
@@ -305,6 +336,7 @@ func (i *PDFt) toStream(newpdf *PDFData, lastID int) (*bytes.Buffer, error) {
 	xrefs := make(map[int]int)
 	for _, obj := range newpdf.objs {
 		//xrefs = append(xrefs, buff.Len())
+		//fmt.Printf("%d\n", obj.objID)
 		xrefs[obj.objID] = buff.Len()
 		buff.WriteString(fmt.Sprintf("\n%d 0 obj\n", obj.objID))
 		buff.WriteString(strings.TrimSpace(string(obj.data)))
@@ -326,12 +358,13 @@ func (i *PDFt) xref(linelens map[int]int, buff *bytes.Buffer, size int, rootID i
 
 	//start xref
 	buff.WriteString("\nxref\n")
-	buff.WriteString(fmt.Sprintf("0 %d\r\n", size))
+	buff.WriteString(fmt.Sprintf("0 %d\r\n", size+1))
 	var xrefrows []xrefrow
 	xrefrows = append(xrefrows, xrefrow{offset: 0, flag: "f", gen: "65535"})
 	lastIndexOfF := 0
 	j := 1
-	for j < size {
+	//fmt.Printf("size:%d\n", size)
+	for j <= size {
 		if linelen, ok := linelens[j]; ok {
 			xrefrows = append(xrefrows, xrefrow{offset: linelen, flag: "n", gen: "00000"})
 		} else {
@@ -350,7 +383,7 @@ func (i *PDFt) xref(linelens map[int]int, buff *bytes.Buffer, size int, rootID i
 
 	buff.WriteString("trailer\n")
 	buff.WriteString("<<\n")
-	buff.WriteString(fmt.Sprintf("/Size %d\n", size))
+	buff.WriteString(fmt.Sprintf("/Size %d\n", size+1))
 	buff.WriteString(fmt.Sprintf("/Root %d 0 R\n", rootID))
 	if i.protection() != nil {
 		buff.WriteString(fmt.Sprintf("/Encrypt %d 0 R\n", encryptionObjID))

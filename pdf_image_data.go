@@ -35,3 +35,24 @@ func (p *PDFImageData) setImgBase64(base64str string) error {
 
 	return nil
 }
+
+func (p *PDFImageData) setImg(img []byte) error {
+
+	buff := bytes.NewBuffer(img)
+	err := p.imgObj.SetImage(buff)
+	if err != nil {
+		return err
+	}
+
+	err = p.imgObj.Parse()
+	if err != nil {
+		return err
+	}
+
+	err = p.imgObj.Build(p.objID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
