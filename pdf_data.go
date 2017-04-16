@@ -56,6 +56,7 @@ func (p *PDFData) maxID() int {
 func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 
 	var err error
+	isEmbedResources := false
 	rootOfXObjectID := -1
 	resourcesContent := ""
 	var cwRes crawl
@@ -77,6 +78,7 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 			if err == ErrorObjectIDNotFound {
 				rootOfXObjectID = resID
 				resourcesContent = resources
+				isEmbedResources = true
 			} else if err != nil {
 				return err
 			} else {
@@ -85,6 +87,7 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 				if data != nil {
 					resourcesContent = string(data.data)
 				}
+				isEmbedResources = false
 			}
 			break
 		}
@@ -160,14 +163,35 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 			objMustReplaces[objID] = r.String()
 		}
 	} else {
-		for objID, r := range cw.results {
-			res := strings.TrimSpace(resourcesContent)
-			res = fmt.Sprintf("<<%s>>\n", xobjs.String())
-			r.add("XObject", res)
-			objMustReplaces[objID] = r.String()
-			fmt.Printf("%s\n", r.String())
+		if isEmbedResources {
+			var cw01 crawl
+			cw01.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources")
+			err = cw01.run()
+			if err != nil {
+				return err
+			}
+			for objID, r := range cw01.results {
+				res, err := r.valOf("Resources")
+				if err == ErrCrawlResultValOfNotFound {
+					continue
+				} else if err != nil {
+					return err
+				} else {
+					res = strings.TrimSpace(res)
+					res = fmt.Sprintf("%s /XObject <<%s>>", res[2:len(res)-2], xobjs.String())
+					r.setValOf("Resources", fmt.Sprintf("<<%s>>\n", res))
+					objMustReplaces[objID] = r.String()
+				}
+			}
+		} else {
+			for objID, r := range cw.results {
+				res := strings.TrimSpace(resourcesContent)
+				res = fmt.Sprintf("<<%s>>\n", xobjs.String())
+				r.add("XObject", res)
+				objMustReplaces[objID] = r.String()
+				fmt.Printf("%s\n", r.String())
+			}
 		}
-		แก้ตรงนี้
 	}
 
 	for objID := range objMustReplaces {

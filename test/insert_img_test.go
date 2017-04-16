@@ -13,8 +13,8 @@ import (
 
 func TestInsertImg(t *testing.T) {
 
-	source := "./pdf/pdf_from_docx_with_f.pdf"
-	//source := "./pdf/pdf_from_docx.pdf"
+	//source := "./pdf/pdf_from_docx_with_f.pdf"
+	source := "./pdf/pdf_from_docx.pdf"
 	//source := "./pdf/pdf_from_gopdf.pdf"
 	//signature := "./img/gopher.png"
 	signature := "./img/gopher2.jpg"
