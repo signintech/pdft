@@ -11,24 +11,31 @@ import (
 	"github.com/signintech/pdft"
 )
 
-func TestInsertImg(t *testing.T) {
+func TestInsertImgDocx(t *testing.T) {
+	testWriteImg(t, "./pdf/pdf_from_docx.pdf", "./out/pdf_from_docx_out.pdf")
+}
 
+func TestInsertImgChromePdf(t *testing.T) {
+	testWriteImg(t, "./pdf/pdf_from_chrome_50_linux64.pdf", "./out/pdf_from_chrome_50_linux64_out.pdf")
+}
+
+func testWriteImg(t *testing.T, source string, target string) {
 	//source := "./pdf/pdf_from_docx_with_f.pdf"
-	source := "./pdf/pdf_from_docx.pdf"
 	//source := "./pdf/pdf_from_gopdf.pdf"
 	//signature := "./img/gopher.png"
 	signature := "./img/gopher2.jpg"
-	target := "./out/pdf_from_docx_out.pdf"
 
 	var ipdf pdft.PDFt
 	err := ipdf.Open(source)
 	if err != nil {
 		t.Error("Couldn't open pdf.")
+		return
 	}
 
 	encoded, data, err := readImg(signature)
 	if err != nil {
 		t.Error("Couldn't read image")
+		return
 	}
 
 	/*err = ipdf.InsertImgBase64(encoded, 1, 100, 200, 100, 100)
@@ -41,12 +48,14 @@ func TestInsertImg(t *testing.T) {
 	_ = encoded
 	err = ipdf.InsertImg(data, 1, 100.0, 100.0, 100, 100)
 	if err != nil {
-		t.Error("Couldn't insert image")
+		t.Errorf("Couldn't insert image %+v", err)
+		return
 	}
 
 	err = ipdf.Save(target)
 	if err != nil {
-		t.Error("Couldn't save pdf.")
+		t.Errorf("Couldn't save pdf. %+v", err)
+		return
 	}
 }
 
