@@ -29,6 +29,14 @@ func _TestInsertImgChromeWin10Pdf(t *testing.T) {
 	testWriteImg(t, "./pdf/pdf_from_chrome_50_win10.pdf", "./out/pdf_from_chrome_50_win10_out.pdf")
 }
 
+func TestInsertImgWord2013Pdf(t *testing.T) {
+	testWriteImg(t, "./pdf/pdf_from_word2013.pdf", "./out/pdf_from_word2013_out.pdf")
+}
+
+func TestInsertImgWord2010Pdf(t *testing.T) {
+	testWriteImg(t, "./pdf/pdf_from_word2010.pdf", "./out/pdf_from_word2010_out.pdf")
+}
+
 func testWriteImg(t *testing.T, source string, target string) {
 	//source := "./pdf/pdf_from_docx_with_f.pdf"
 	//source := "./pdf/pdf_from_gopdf.pdf"
