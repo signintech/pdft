@@ -15,8 +15,18 @@ func TestInsertImgDocx(t *testing.T) {
 	testWriteImg(t, "./pdf/pdf_from_docx.pdf", "./out/pdf_from_docx_out.pdf")
 }
 
-func TestInsertImgChromePdf(t *testing.T) {
+func TestInsertImgGopdf(t *testing.T) {
+	testWriteImg(t, "./pdf/pdf_from_gopdf.pdf", "./out/pdf_from_gopdf_out.pdf")
+}
+
+func _TestInsertImgChromeLinuxPdf(t *testing.T) {
+	//FIXME: test file
 	testWriteImg(t, "./pdf/pdf_from_chrome_50_linux64.pdf", "./out/pdf_from_chrome_50_linux64_out.pdf")
+}
+
+func _TestInsertImgChromeWin10Pdf(t *testing.T) {
+	//FIXME: test file
+	testWriteImg(t, "./pdf/pdf_from_chrome_50_win10.pdf", "./out/pdf_from_chrome_50_win10_out.pdf")
 }
 
 func testWriteImg(t *testing.T, source string, target string) {
@@ -31,24 +41,32 @@ func testWriteImg(t *testing.T, source string, target string) {
 		t.Error("Couldn't open pdf.")
 		return
 	}
+	ipdf.AddFont("arial", "./ttf/arial.ttf")
+	ipdf.SetFont("arial", "", 14)
 
-	encoded, data, err := readImg(signature)
+	encodedData, rawData, err := readImg(signature)
 	if err != nil {
 		t.Error("Couldn't read image")
 		return
 	}
 
-	/*err = ipdf.InsertImgBase64(encoded, 1, 100, 200, 100, 100)
+	/*err = ipdf.InsertImgBase64(encodedData, 1, 100, 200, 100, 100)
 	if err != nil {
 		t.Error("Couldn't insert image base64")
 	}
-
-	*/
 	_ = data
-	_ = encoded
-	err = ipdf.InsertImg(data, 1, 100.0, 100.0, 100, 100)
+	*/
+
+	_ = encodedData
+	err = ipdf.InsertImg(rawData, 1, 100.0, 100.0, 100, 100)
 	if err != nil {
 		t.Errorf("Couldn't insert image %+v", err)
+		return
+	}
+
+	err = ipdf.Insert("Hello PDF", 1, 10.0, 10.0, 100, 100, pdft.Left|pdft.Top)
+	if err != nil {
+		t.Errorf("Couldn't insert text %+v", err)
 		return
 	}
 
