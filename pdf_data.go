@@ -189,7 +189,7 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 				res = fmt.Sprintf("<<%s>>\n", xobjs.String())
 				r.add("XObject", res)
 				objMustReplaces[objID] = r.String()
-				fmt.Printf("%s\n", r.String())
+				//fmt.Printf("%s\n", r.String())
 			}
 		}
 	}
