@@ -37,6 +37,10 @@ func TestInsertImgWord2010Pdf(t *testing.T) {
 	testWriteImg(t, "./pdf/pdf_from_word2010.pdf", "./out/pdf_from_word2010_out.pdf")
 }
 
+func TestInsertImgRdlcPdf(t *testing.T) {
+	testWriteImg(t, "./pdf/pdf_from_rdlc.pdf", "./out/pdf_from_rdlc_out.pdf")
+}
+
 func testWriteImg(t *testing.T, source string, target string) {
 	//source := "./pdf/pdf_from_docx_with_f.pdf"
 	//source := "./pdf/pdf_from_gopdf.pdf"
