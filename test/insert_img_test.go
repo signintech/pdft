@@ -42,46 +42,39 @@ func TestInsertImgRdlcPdf(t *testing.T) {
 }
 
 func testWriteImg(t *testing.T, source string, target string) {
-	//source := "./pdf/pdf_from_docx_with_f.pdf"
-	//source := "./pdf/pdf_from_gopdf.pdf"
-	//signature := "./img/gopher.png"
+
 	signature := "./img/gopher2.jpg"
 
 	var ipdf pdft.PDFt
-	err := ipdf.Open(source)
+	err := ipdf.Open(source) //open source PDF file
 	if err != nil {
 		t.Error("Couldn't open pdf.")
 		return
 	}
 	ipdf.AddFont("arial", "./ttf/arial.ttf")
-	ipdf.SetFont("arial", "", 14)
 
-	encodedData, rawData, err := readImg(signature)
+	_, rawData, err := readImg(signature)
 	if err != nil {
 		t.Error("Couldn't read image")
 		return
 	}
 
-	/*err = ipdf.InsertImgBase64(encodedData, 1, 100, 200, 100, 100)
-	if err != nil {
-		t.Error("Couldn't insert image base64")
-	}
-	_ = data
-	*/
-
-	_ = encodedData
+	//insert image (support only jpg)
 	err = ipdf.InsertImg(rawData, 1, 100.0, 100.0, 100, 100)
 	if err != nil {
 		t.Errorf("Couldn't insert image %+v", err)
 		return
 	}
 
+	//insert text
+	ipdf.SetFont("arial", "", 14)
 	err = ipdf.Insert("Hello PDF", 1, 10.0, 10.0, 100, 100, pdft.Left|pdft.Top)
 	if err != nil {
 		t.Errorf("Couldn't insert text %+v", err)
 		return
 	}
 
+	//save to target PDF file
 	err = ipdf.Save(target)
 	if err != nil {
 		t.Errorf("Couldn't save pdf. %+v", err)
@@ -102,6 +95,6 @@ func readImg(path string) (string, []byte, error) {
 		return "", nil, err
 	}
 
-	encoded := base64.StdEncoding.EncodeToString(data)
-	return encoded, data, nil
+	encoded64 := base64.StdEncoding.EncodeToString(data)
+	return encoded64, data, nil
 }
