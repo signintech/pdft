@@ -11,37 +11,37 @@ import (
 	"github.com/signintech/pdft"
 )
 
-func TestInsertImgDocx(t *testing.T) {
-	testWriteImg(t, "./pdf/pdf_from_docx.pdf", "./out/pdf_from_docx_out.pdf")
+func TestInsertToDocx(t *testing.T) {
+	writePdf(t, "./pdf/pdf_from_docx.pdf", "./out/pdf_from_docx_out.pdf")
 }
 
-func TestInsertImgGopdf(t *testing.T) {
-	testWriteImg(t, "./pdf/pdf_from_gopdf.pdf", "./out/pdf_from_gopdf_out.pdf")
+func TestInsertToGopdf(t *testing.T) {
+	writePdf(t, "./pdf/pdf_from_gopdf.pdf", "./out/pdf_from_gopdf_out.pdf")
 }
 
-func _TestInsertImgChromeLinuxPdf(t *testing.T) {
+func _TestInsertToChromeLinuxPdf(t *testing.T) {
 	//FIXME: test file
-	testWriteImg(t, "./pdf/pdf_from_chrome_50_linux64.pdf", "./out/pdf_from_chrome_50_linux64_out.pdf")
+	writePdf(t, "./pdf/pdf_from_chrome_50_linux64.pdf", "./out/pdf_from_chrome_50_linux64_out.pdf")
 }
 
-func _TestInsertImgChromeWin10Pdf(t *testing.T) {
+func _TestInsertToChromeWin10Pdf(t *testing.T) {
 	//FIXME: test file
-	testWriteImg(t, "./pdf/pdf_from_chrome_50_win10.pdf", "./out/pdf_from_chrome_50_win10_out.pdf")
+	writePdf(t, "./pdf/pdf_from_chrome_50_win10.pdf", "./out/pdf_from_chrome_50_win10_out.pdf")
 }
 
-func TestInsertImgWord2013Pdf(t *testing.T) {
-	testWriteImg(t, "./pdf/pdf_from_word2013.pdf", "./out/pdf_from_word2013_out.pdf")
+func TestInsertToWord2013Pdf(t *testing.T) {
+	writePdf(t, "./pdf/pdf_from_word2013.pdf", "./out/pdf_from_word2013_out.pdf")
 }
 
-func TestInsertImgWord2010Pdf(t *testing.T) {
-	testWriteImg(t, "./pdf/pdf_from_word2010.pdf", "./out/pdf_from_word2010_out.pdf")
+func TestInsertToWord2010Pdf(t *testing.T) {
+	writePdf(t, "./pdf/pdf_from_word2010.pdf", "./out/pdf_from_word2010_out.pdf")
 }
 
-func TestInsertImgRdlcPdf(t *testing.T) {
-	testWriteImg(t, "./pdf/pdf_from_rdlc.pdf", "./out/pdf_from_rdlc_out.pdf")
+func TestInsertToRdlcPdf(t *testing.T) {
+	writePdf(t, "./pdf/pdf_from_rdlc.pdf", "./out/pdf_from_rdlc_out.pdf")
 }
 
-func testWriteImg(t *testing.T, source string, target string) {
+func writePdf(t *testing.T, source string, target string) {
 
 	signature := "./img/gopher2.jpg"
 
