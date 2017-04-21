@@ -12,7 +12,7 @@ import (
 	"github.com/signintech/pdft"
 )
 
-func _TestInsertToDocx(t *testing.T) {
+func TestInsertToDocx(t *testing.T) {
 
 	if err := initTest(); err != nil {
 		t.Errorf("%+v", err)
@@ -22,7 +22,7 @@ func _TestInsertToDocx(t *testing.T) {
 	writePdf(t, "./pdf/pdf_from_docx.pdf", "./out/pdf_from_docx_out.pdf")
 }
 
-func _TestInsertToGopdf(t *testing.T) {
+func TestInsertToGopdf(t *testing.T) {
 
 	if err := initTest(); err != nil {
 		t.Errorf("%+v", err)
@@ -63,11 +63,11 @@ func TestInsertToWord2013Pdf(t *testing.T) {
 	writePdf(t, "./pdf/pdf_from_word2013.pdf", "./out/pdf_from_word2013_out.pdf")
 }
 
-func _TestInsertToWord2010Pdf(t *testing.T) {
+func TestInsertToWord2010Pdf(t *testing.T) {
 	writePdf(t, "./pdf/pdf_from_word2010.pdf", "./out/pdf_from_word2010_out.pdf")
 }
 
-func _TestInsertToRdlcPdf(t *testing.T) {
+func TestInsertToRdlcPdf(t *testing.T) {
 	writePdf(t, "./pdf/pdf_from_rdlc.pdf", "./out/pdf_from_rdlc_out.pdf")
 }
 

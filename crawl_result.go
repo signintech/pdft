@@ -55,8 +55,10 @@ func loopSetValOf(cr *crawlResult, key string, val string) error {
 }
 
 func loopValOf(cr *crawlResult, key string) (string, error) {
+	//fmt.Printf("\n#####%s\n", key)
 	for _, item := range cr.items {
 		if item.typeOfVal == typeOfValStr {
+			//fmt.Printf("key=%s\n", item.key)
 			if item.key == key {
 				v, err := item.getValStr()
 				if err != nil {

@@ -119,6 +119,26 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 		}
 	}
 
+	if !found { //ถ้ายังไม่เจออีก
+		//cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "XObject")
+		cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "XObject")
+		err = cw.run()
+		if err != nil {
+			return err
+		}
+		for objID, r := range cw.results {
+			xobject, err := r.valOf("XObject")
+			if err == ErrCrawlResultValOfNotFound {
+				continue
+			} else if err != nil {
+				return err
+			} else {
+				xObjectVals[objID] = xobject
+				found = true
+			}
+		}
+	}
+
 	var xobjs crawlResultXObjects
 	var xObjIndex int
 	xObjChar := "I"
