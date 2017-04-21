@@ -2,6 +2,7 @@ package test
 
 import (
 	"encoding/base64"
+	"errors"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -11,34 +12,73 @@ import (
 	"github.com/signintech/pdft"
 )
 
-func TestInsertToDocx(t *testing.T) {
+func _TestInsertToDocx(t *testing.T) {
+
+	if err := initTest(); err != nil {
+		t.Errorf("%+v", err)
+		return
+	}
+
 	writePdf(t, "./pdf/pdf_from_docx.pdf", "./out/pdf_from_docx_out.pdf")
 }
 
-func TestInsertToGopdf(t *testing.T) {
+func _TestInsertToGopdf(t *testing.T) {
+
+	if err := initTest(); err != nil {
+		t.Errorf("%+v", err)
+		return
+	}
+
 	writePdf(t, "./pdf/pdf_from_gopdf.pdf", "./out/pdf_from_gopdf_out.pdf")
 }
 
 func _TestInsertToChromeLinuxPdf(t *testing.T) {
+
+	if err := initTest(); err != nil {
+		t.Errorf("%+v", err)
+		return
+	}
+
 	//FIXME: test file
 	writePdf(t, "./pdf/pdf_from_chrome_50_linux64.pdf", "./out/pdf_from_chrome_50_linux64_out.pdf")
 }
 
 func _TestInsertToChromeWin10Pdf(t *testing.T) {
+
+	if err := initTest(); err != nil {
+		t.Errorf("%+v", err)
+		return
+	}
 	//FIXME: test file
 	writePdf(t, "./pdf/pdf_from_chrome_50_win10.pdf", "./out/pdf_from_chrome_50_win10_out.pdf")
 }
 
 func TestInsertToWord2013Pdf(t *testing.T) {
+
+	if err := initTest(); err != nil {
+		t.Errorf("%+v", err)
+		return
+	}
+
 	writePdf(t, "./pdf/pdf_from_word2013.pdf", "./out/pdf_from_word2013_out.pdf")
 }
 
-func TestInsertToWord2010Pdf(t *testing.T) {
+func _TestInsertToWord2010Pdf(t *testing.T) {
 	writePdf(t, "./pdf/pdf_from_word2010.pdf", "./out/pdf_from_word2010_out.pdf")
 }
 
-func TestInsertToRdlcPdf(t *testing.T) {
+func _TestInsertToRdlcPdf(t *testing.T) {
 	writePdf(t, "./pdf/pdf_from_rdlc.pdf", "./out/pdf_from_rdlc_out.pdf")
+}
+
+func TestInsertToWithImgPdf(t *testing.T) {
+
+	if err := initTest(); err != nil {
+		t.Errorf("%+v", err)
+		return
+	}
+
+	writePdf(t, "./pdf/pdf_with_img.pdf", "./out/pdf_with_img_out.pdf")
 }
 
 func writePdf(t *testing.T, source string, target string) {
@@ -97,4 +137,29 @@ func readImg(path string) (string, []byte, error) {
 
 	encoded64 := base64.StdEncoding.EncodeToString(data)
 	return encoded64, data, nil
+}
+
+func initTest() error {
+	isExists, err := exists("./out/")
+	if err != nil {
+		return errors.New("can not create out/ for test")
+	}
+	if !isExists {
+		err := os.MkdirAll("./out/", 0777)
+		if err != nil {
+			return errors.New("can not create out/ for test")
+		}
+	}
+	return nil
+}
+
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
 }
