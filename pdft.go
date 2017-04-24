@@ -89,7 +89,7 @@ func (i *PDFt) Open(filepath string) error {
 		return err
 	}
 	//fmt.Printf("%s\n", i.pdf.hash())
-	//i.ShowCellBorder(false)
+	i.ShowCellBorder(false)
 
 	return nil
 }
