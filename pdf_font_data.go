@@ -28,7 +28,7 @@ type PDFFontData struct {
 }
 
 func (p *PDFFontData) init() {
-	p.font.CharacterToGlyphIndex = make(map[rune]uint)
+	p.font.CharacterToGlyphIndex = gopdf.NewMapOfCharacterToGlyphIndex() //make(map[rune]uint)
 }
 
 func (p *PDFFontData) setFontName(name string) {

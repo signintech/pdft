@@ -33,7 +33,7 @@ func pdf(t *testing.T, filename string) {
 		return
 	}
 
-	err = ipdf.AddFont("arial", "test/ttf/arial.ttf")
+	err = ipdf.AddFont("arial", "test/ttf/angsa.ttf")
 	if err != nil {
 		t.Error(err)
 		return
@@ -45,7 +45,7 @@ func pdf(t *testing.T, filename string) {
 		return
 	}
 
-	err = ipdf.Insert("hi", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom)
+	err = ipdf.Insert("ที่ กั้น", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom)
 	if err != nil {
 		t.Error(err)
 		return
