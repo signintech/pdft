@@ -91,7 +91,7 @@ func writePdf(t *testing.T, source string, target string) {
 		t.Error("Couldn't open pdf.")
 		return
 	}
-	ipdf.AddFont("arial", "./ttf/arial.ttf")
+	ipdf.AddFont("arial", "./ttf/angsa.ttf")
 
 	_, rawData, err := readImg(signature)
 	if err != nil {
@@ -108,7 +108,7 @@ func writePdf(t *testing.T, source string, target string) {
 
 	//insert text
 	ipdf.SetFont("arial", "", 14)
-	err = ipdf.Insert("Hello PDF", 1, 10.0, 10.0, 100, 100, pdft.Left|pdft.Top)
+	err = ipdf.Insert("Hello PDF  กั้น ชั้น ที่", 1, 10.0, 10.0, 100, 100, pdft.Left|pdft.Top)
 	if err != nil {
 		t.Errorf("Couldn't insert text %+v", err)
 		return
