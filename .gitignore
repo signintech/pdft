@@ -3,3 +3,4 @@
 test/out
 .vscode/
 debug.test
+.DS_Store
