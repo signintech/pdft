@@ -10,7 +10,7 @@ import (
 type ContentText struct {
 	text          string
 	fontName      string
-	fontStyle     string
+	fontStyle     int
 	fontSize      int
 	pageNum       int
 	x             float64

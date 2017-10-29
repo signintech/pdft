@@ -44,7 +44,7 @@ type PDFt struct {
 
 type current struct {
 	fontName  string
-	fontStyle string
+	fontStyle int
 	fontSize  int
 	lineWidth float64
 }
@@ -194,7 +194,7 @@ func (i *PDFt) SetFont(name string, style string, size int) error {
 		return ErrFontNameNotFound
 	}
 	i.curr.fontName = name
-	i.curr.fontStyle = style
+	i.curr.fontStyle = getConvertedStyle(style)
 	i.curr.fontSize = size
 	return nil
 }
@@ -377,7 +377,7 @@ func (i *PDFt) xref(linelens map[int]int, buff *bytes.Buffer, size int, rootID i
 	}
 
 	for _, xrefrow := range xrefrows {
-		buff.WriteString(i.formatXrefline(xrefrow.offset) + " " + xrefrow.gen + " " + xrefrow.flag + "\n")
+		buff.WriteString(i.formatXrefline(xrefrow.offset) + " " + xrefrow.gen + " " + xrefrow.flag + " \n")
 	}
 	//end xref
 
@@ -417,4 +417,27 @@ func (i *PDFt) SetProtection(
 	}
 	i.pdfProtection = &p
 	return nil
+}
+
+//Regular - font style regular
+const Regular = 0 //000000
+//Italic - font style italic
+const Italic = 1 //000001
+//Bold - font style bold
+const Bold = 2 //000010
+//Underline - font style underline
+const Underline = 4 //000100
+
+func getConvertedStyle(fontStyle string) (style int) {
+	fontStyle = strings.ToUpper(fontStyle)
+	if strings.Contains(fontStyle, "B") {
+		style = style | Bold
+	}
+	if strings.Contains(fontStyle, "I") {
+		style = style | Italic
+	}
+	if strings.Contains(fontStyle, "U") {
+		style = style | Underline
+	}
+	return
 }
