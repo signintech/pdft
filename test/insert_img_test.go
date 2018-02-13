@@ -91,13 +91,35 @@ func writePdf(t *testing.T, source string, target string) {
 		t.Error("Couldn't open pdf.")
 		return
 	}
-	ipdf.AddFont("arial", "./ttf/angsa.ttf")
+	ipdf.AddFont("angsa", "./ttf/angsa.ttf")
 
 	_, rawData, err := readImg(signature)
 	if err != nil {
 		t.Error("Couldn't read image")
 		return
 	}
+
+	angsatextrisefn := func(
+		leftRune rune,
+		rightRune rune,
+		leftPair uint,
+		rightPair uint,
+		fontSize int,
+	) float32 {
+		gap := float32(0)
+		if rightRune == '่' || rightRune == '้' || rightRune == '๊' || rightRune == '๋' {
+			if leftRune == 'ิ' || leftRune == 'ี' ||
+				leftRune == 'ึ' || leftRune == 'ื' ||
+				leftRune == 'ั' {
+				gap = 9.5
+			} else if leftRune == 'ป' || leftRune == 'ฬ' || leftRune == 'ฝ' || leftRune == 'ฟ' {
+				gap = 3
+			}
+		}
+		return gap * (float32(fontSize) / 40.0)
+	}
+
+	ipdf.TextriseOverride("angsa", angsatextrisefn)
 
 	//insert image (support only jpg)
 	err = ipdf.InsertImg(rawData, 1, 100.0, 100.0, 100, 100)
@@ -107,7 +129,7 @@ func writePdf(t *testing.T, source string, target string) {
 	}
 
 	//insert text
-	ipdf.SetFont("arial", "", 14)
+	ipdf.SetFont("angsa", "", 14)
 	err = ipdf.Insert("Hello PDF  กั้น ชั้น ที่", 1, 10.0, 10.0, 100, 100, pdft.Left|pdft.Top)
 	if err != nil {
 		t.Errorf("Couldn't insert text %+v", err)

@@ -187,6 +187,28 @@ func (i *PDFt) AddFont(name string, ttfpath string) error {
 	return nil
 }
 
+//TextriseOverride override text rise
+//Text rise, Trise , specifies the distance, in unscaled text space units,
+//to move the baseline up or down from its default location.
+//Positive values of text rise move the baseline up.
+//Adjustments to the baseline are useful for drawing superscripts or subscripts.
+//The default location of the baseline can be restored by setting the text rise to 0.
+func (i *PDFt) TextriseOverride(name string, fn FuncTextriseOverride) error {
+	if _, have := i.fontDatas[name]; !have {
+		return ErrFontNameNotFound
+	}
+	i.fontDatas[name].font.SetFuncTextriseOverride(func(
+		leftRune rune,
+		rightRune rune,
+		leftPair uint,
+		rightPair uint,
+		fontsize int,
+	) float32 {
+		return fn(leftRune, rightRune, leftPair, rightPair, fontsize)
+	})
+	return nil
+}
+
 //SetFont set font
 func (i *PDFt) SetFont(name string, style string, size int) error {
 
