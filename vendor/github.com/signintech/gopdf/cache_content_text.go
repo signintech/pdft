@@ -265,6 +265,7 @@ func createContent(f *SubsetFontObj, text string, fontSize int, rectangle *Rect,
 			pairvalPdfUnit = convertTTFUnit2PDFUnit(int(pairval), unitsPerEm)
 			if pairvalPdfUnit != 0 && out != nil {
 				out.WriteString(fmt.Sprintf(">%d<", (-1)*pairvalPdfUnit))
+
 			}
 		}
 

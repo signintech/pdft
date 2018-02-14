@@ -47,7 +47,6 @@ func (r *Render) Text(key string, text string) error {
 
 	log.Printf("Warr: Not found key %s", key)
 	return nil
-	//return fmt.Errorf(errNotFoundKey, key)
 }
 
 //ImgBase64 image base 64

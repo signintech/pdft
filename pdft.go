@@ -209,6 +209,23 @@ func (i *PDFt) TextriseOverride(name string, fn FuncTextriseOverride) error {
 	return nil
 }
 
+//KernOverride override kerning
+func (i *PDFt) KernOverride(name string, fn FuncKernOverride) error {
+	if _, have := i.fontDatas[name]; !have {
+		return ErrFontNameNotFound
+	}
+	i.fontDatas[name].font.SetFuncKernOverride(func(
+		leftRune rune,
+		rightRune rune,
+		leftPair uint,
+		rightPair uint,
+		pairVal int16,
+	) int16 {
+		return fn(leftRune, rightRune, leftPair, rightPair, pairVal)
+	})
+	return nil
+}
+
 //SetFont set font
 func (i *PDFt) SetFont(name string, style string, size int) error {
 

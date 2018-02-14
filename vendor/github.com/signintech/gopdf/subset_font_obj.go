@@ -27,7 +27,12 @@ type SubsetFontObj struct {
 	funcTextriseOverride  FuncTextriseOverride
 }
 
+func (s *SubsetFontObj) SetFuncKernOverride(funcKernOverride FuncKernOverride) {
+	s.funcKernOverride = funcKernOverride
+}
+
 func (s *SubsetFontObj) SetFuncTextriseOverride(funcTextriseOverride FuncTextriseOverride) {
+	s.ttfFontOption.UseKerning = true
 	s.funcTextriseOverride = funcTextriseOverride
 }
 
