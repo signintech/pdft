@@ -200,11 +200,11 @@ func (i *PDFt) TextriseOverride(name string, fn FuncTextriseOverride) error {
 	i.fontDatas[name].font.SetFuncTextriseOverride(func(
 		leftRune rune,
 		rightRune rune,
-		leftPair uint,
-		rightPair uint,
 		fontsize int,
+		allText string,
+		currTextIndex int,
 	) float32 {
-		return fn(leftRune, rightRune, leftPair, rightPair, fontsize)
+		return fn(leftRune, rightRune, fontsize, allText, currTextIndex)
 	})
 	return nil
 }

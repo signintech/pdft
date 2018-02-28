@@ -102,9 +102,9 @@ func writePdf(t *testing.T, source string, target string) {
 	angsatextrisefn := func(
 		leftRune rune,
 		rightRune rune,
-		leftPair uint,
-		rightPair uint,
 		fontSize int,
+		allText string,
+		currTextIndex int,
 	) float32 {
 		gap := float32(0)
 		if rightRune == '่' || rightRune == '้' || rightRune == '๊' || rightRune == '๋' {
@@ -114,8 +114,18 @@ func writePdf(t *testing.T, source string, target string) {
 				gap = 9.5
 			} else if leftRune == 'ป' || leftRune == 'ฬ' || leftRune == 'ฝ' || leftRune == 'ฟ' {
 				gap = 3
+			} else {
+				runes := []rune(allText)
+				if len(runes) > currTextIndex+1 {
+					nextRune := runes[currTextIndex+1]
+					if nextRune == 'ำ' {
+						gap = 9.5
+					}
+				}
 			}
+
 		}
+
 		return gap * (float32(fontSize) / 40.0)
 	}
 
@@ -130,7 +140,14 @@ func writePdf(t *testing.T, source string, target string) {
 
 	//insert text
 	ipdf.SetFont("angsa", "", 14)
-	err = ipdf.Insert("Hello PDF  กั้น ชั้น ที่", 1, 10.0, 10.0, 100, 100, pdft.Left|pdft.Top)
+	err = ipdf.Insert("น้ำอยู่บนฟ้าเป็นละอองเป็นไอฉันจะบินไปหาบนนภาทันใดแล้วโปรยเกลือผงหรือโซเดียมคลอไรด์มันจะดูดความชื้นเป็นหยดน้ำเป็นก้อนเมฆ", 1, 10.0, 10.0, 100, 100, pdft.Left|pdft.Top)
+	if err != nil {
+		t.Errorf("Couldn't insert text %+v", err)
+		return
+	}
+
+	ipdf.SetFont("angsa", "", 14)
+	err = ipdf.Insert("นาคีมีพิษเพี้ยง สุริโย เลื้อยบ่ทำเดโช แช่มช้า พิษน้อยหยิ่งโยโส แมงป่อง ชูแต่หางเองอ้า อวดอ้าง ฤทธี", 1, 10.0, 40.0, 100, 100, pdft.Left|pdft.Top)
 	if err != nil {
 		t.Errorf("Couldn't insert text %+v", err)
 		return
