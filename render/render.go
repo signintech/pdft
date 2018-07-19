@@ -1,8 +1,6 @@
 package render
 
 import (
-	"fmt"
-
 	"log"
 
 	"github.com/signintech/pdft"
@@ -59,7 +57,8 @@ func (r *Render) ImgBase64(key string, base64 string) error {
 		}
 		return nil
 	}
-	return fmt.Errorf(errNotFoundKey, key)
+	log.Printf("Warr: Not found key %s", key)
+	return nil
 }
 
 //ShowDesignView for debug

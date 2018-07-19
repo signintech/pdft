@@ -33,11 +33,13 @@ func PDFParse(file io.Reader, outPdf *PDFData) error {
 }
 
 func parseTrailer(raw *[]byte, pdf *PDFData) error {
+
 	indexTrailers := regexpTrailer.FindAllIndex(*raw, 1)
-	indexStartxrefs := regexpStartxref.FindAllIndex(*raw, 1)
 	if len(indexTrailers) <= 0 {
 		return errors.New("trailer not found")
 	}
+
+	indexStartxrefs := regexpStartxref.FindAllIndex(*raw, 1)
 	if len(indexStartxrefs) <= 0 {
 		return errors.New("startxref not found")
 	}

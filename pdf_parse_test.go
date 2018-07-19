@@ -6,7 +6,28 @@ import (
 )
 
 func TestPDFParse(t *testing.T) {
-	//pdfParseChrome50Win10(t)
+	//pdfParseNoTrailer(t)
+	pdfParseFromGoPdf(t)
+}
+
+func pdfParseNoTrailer(t *testing.T) {
+	filename := "no_trailer.pdf"
+	var ipdf PDFt
+	err := ipdf.Open("test/pdf/" + filename)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func pdfParseFromGoPdf(t *testing.T) {
+	filename := "pdf_from_gopdf.pdf"
+	var ipdf PDFt
+	err := ipdf.Open("test/pdf/" + filename)
+	if err != nil {
+		t.Error(err)
+		return
+	}
 }
 
 func pdfParseChrome50Win10(t *testing.T) {
