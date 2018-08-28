@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/signintech/gopdf"
+	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
 //ErrAddSameFontName add same font name

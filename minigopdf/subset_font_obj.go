@@ -7,7 +7,7 @@ import (
 
 	"io"
 
-	"github.com/signintech/gopdf/fontmaker/core"
+	"github.com/signintech/pdft/minigopdf/fontmaker/core"
 )
 
 //ErrCharNotFound char not found

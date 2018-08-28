@@ -3,7 +3,7 @@ package pdft
 import (
 	"bytes"
 
-	"github.com/signintech/gopdf"
+	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
 //PDFFontData font data

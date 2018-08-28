@@ -3,7 +3,7 @@ package pdft
 import (
 	"bytes"
 
-	"github.com/signintech/gopdf"
+	"github.com/signintech/pdft/minigopdf"
 )
 
 //ContentText text in pdf

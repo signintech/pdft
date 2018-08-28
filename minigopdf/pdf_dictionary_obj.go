@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/signintech/gopdf/fontmaker/core"
+	"github.com/signintech/pdft/minigopdf/fontmaker/core"
 )
 
 //EntrySelectors entry selectors
