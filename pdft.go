@@ -74,17 +74,22 @@ func (i *PDFt) ShowCellBorder(isShow bool) {
 
 //Open open pdf file
 func (i *PDFt) Open(filepath string) error {
-	//init
-	i.fontDatas = make(map[string]*PDFFontData)
-	i.curr.lineWidth = 1.0
-	//open
 	f, err := os.Open(filepath)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	err = PDFParse(f, &i.pdf)
+	return i.OpenFrom(f)
+}
+
+//OpenFrom open pdf from io.Reader
+func (i *PDFt) OpenFrom(r io.Reader) error {
+	//init
+	i.fontDatas = make(map[string]*PDFFontData)
+	i.curr.lineWidth = 1.0
+	//open
+	err := PDFParse(r, &i.pdf)
 	if err != nil {
 		return err
 	}
