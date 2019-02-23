@@ -16,19 +16,19 @@ if err != nil {
 }
 
 
-err = ipdf.AddFont("arial", "./arial.ttf")
+err = pt.AddFont("arial", "./arial.ttf")
 if err != nil {
     t.Error(err)
     return
 }
 
-err = ipdf.SetFont("arial", "", 14)
+err = pt.SetFont("arial", "", 14)
 if err != nil {
     panic(err) 
 }
 
 //insert text to pdf
-err = ipdf.Insert("Hi", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom)
+err = pt.Insert("Hi", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom)
 if err != nil {
     panic(err) 
 }
@@ -44,6 +44,18 @@ if err != nil {
 err = pt.InsertImg(pic, 1, 182.0, 165.0, 172.0, 49.0)
 if err != nil {
 	panic("Couldn't insert image")
+}
+
+// Duplicate first page to last page
+err = pt.DuplicatePageAfter(1, -1)
+if err != nil {
+	panic("Couldn't duplicate first page")
+}
+
+// Remove second page
+err = pt.RemovePage(2)
+if err != nil {
+	panic("Couldn't remove targetPage")
 }
 
 err = pt.Save(target)
