@@ -12,9 +12,9 @@ func (p *PDFObjPropertiesData) size() int {
 }
 
 func (p *PDFObjPropertiesData) getPropByKey(key string) *PDFObjPropertyData {
-	for _, prop := range *p {
+	for i, prop := range *p {
 		if prop.key == key {
-			return &prop
+			return &(*p)[i]
 		}
 	}
 	return nil

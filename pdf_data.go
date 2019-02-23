@@ -12,10 +12,11 @@ import (
 
 //PDFData pdf file data
 type PDFData struct {
-	trailer TrailerData
-	xrefs   []XrefData
-	objIDs  []int
-	objs    []PDFObjData
+	trailer  TrailerData
+	xrefs    []XrefData
+	objIDs   []int
+	objs     []PDFObjData
+	pagesObj *PDFObjData
 }
 
 //TrailerData trailer
@@ -33,6 +34,13 @@ func (p *PDFData) put(pdfobj PDFObjData) {
 	p.objs = append(p.objs, pdfobj)
 }
 
+func (p *PDFData) putNewObject(pdfobj PDFObjData) int {
+	newObjID := p.maxID() + 1
+	pdfobj.objID = newObjID
+	p.put(pdfobj)
+	return newObjID
+}
+
 //GetObjByID get obj by objid
 func (p *PDFData) getObjByID(objID int) *PDFObjData {
 	for i, id := range p.objIDs {
@@ -41,6 +49,23 @@ func (p *PDFData) getObjByID(objID int) *PDFObjData {
 		}
 	}
 	return nil
+}
+
+// getPagesObjID return number of page of the pdf
+func (p *PDFData) getPageObjIDs() ([]int, error) {
+	pagesProp, err := p.pagesObj.readProperties()
+	if err != nil {
+		return nil, err
+	}
+	pagesKids := pagesProp.getPropByKey("Kids")
+	if pagesKids == nil {
+		return nil, errors.New("Not found Kids property in this object")
+	}
+	listPagesObjID, _, err := pagesKids.asDictionaryArr()
+	if err != nil {
+		return nil, err
+	}
+	return listPagesObjID, err
 }
 
 func (p *PDFData) maxID() int {

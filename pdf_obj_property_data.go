@@ -3,6 +3,7 @@ package pdft
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,6 +18,23 @@ const number = "number"
 type PDFObjPropertyData struct {
 	key    string
 	rawVal string
+}
+
+func (p *PDFObjPropertyData) setAsDictionary(value, revision int) {
+	p.rawVal = fmt.Sprintf("%d %d R", value, revision)
+}
+
+func (p *PDFObjPropertyData) setAsDictionaryArr(values, revisions []int) {
+	if revisions == nil {
+		revisions = make([]int, len(values))
+	}
+	var data bytes.Buffer
+	data.WriteString("[")
+	for i := range values {
+		data.WriteString(fmt.Sprintf("%d %d R ", values[i], revisions[i]))
+	}
+	data.WriteString("]")
+	p.rawVal = data.String()
 }
 
 func (p *PDFObjPropertyData) asDictionary() (int, int, error) {

@@ -93,10 +93,86 @@ func (i *PDFt) OpenFrom(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	//fmt.Printf("%s\n", i.pdf.hash())
+
 	i.ShowCellBorder(false)
 
 	return nil
+}
+
+// DuplicatePageAfter ...
+func (i *PDFt) DuplicatePageAfter(targetPageNumber, position int) error {
+	pageObjIds, err := i.pdf.getPageObjIDs()
+	if err != nil {
+		return err
+	}
+	if targetPageNumber > 0 && len(pageObjIds) < targetPageNumber {
+		return errors.New("No desired page to copy")
+	}
+
+	pageObj := *(i.pdf.getObjByID(pageObjIds[targetPageNumber-1])) //copy object value
+
+	props, err := pageObj.readProperties()
+	if err != nil {
+		return err
+	}
+	pageContent := props.getPropByKey("Contents")
+	if pageContent == nil {
+		return errors.New("No Contents property in this object")
+	}
+	contentID, _, err := pageContent.asDictionary()
+	if err != nil {
+		return err
+	}
+	contentID = i.pdf.putNewObject(*(i.pdf.getObjByID(contentID))) //copy object value
+	pageContent.setAsDictionary(contentID, 0)
+	pageObj.setProperties(props)
+
+	pageID := i.pdf.putNewObject(pageObj)
+
+	if position < 0 {
+		position = len(pageObjIds) + position // like python
+	}
+	pageObjIds = append(pageObjIds, 0)
+	copy(pageObjIds[position+1:], pageObjIds[position:])
+	pageObjIds[position+1] = pageID
+
+	return i.setPages(pageObjIds)
+}
+
+// RemovePage remove page at targetPageNumber
+func (i *PDFt) RemovePage(targetPageNumber int) error {
+	pageObjIds, err := i.pdf.getPageObjIDs()
+	if err != nil {
+		return err
+	}
+	if targetPageNumber > 0 && len(pageObjIds) < targetPageNumber {
+		return errors.New("No desired page to remove")
+	}
+	copy(pageObjIds[targetPageNumber-1:], pageObjIds[targetPageNumber:])
+	pageObjIds = pageObjIds[:len(pageObjIds)-1]
+
+	return i.setPages(pageObjIds)
+}
+
+func (i *PDFt) setPages(pageObjIds []int) error {
+	props, err := i.pdf.pagesObj.readProperties()
+	if err != nil {
+		return err
+	}
+	nPage := len(pageObjIds)
+	props.getPropByKey("Count").rawVal = strconv.Itoa(nPage)
+	props.getPropByKey("Kids").setAsDictionaryArr(pageObjIds, nil)
+	i.pdf.pagesObj.setProperties(props)
+	return nil
+}
+
+//GetNumberOfPage get number of page
+func (i *PDFt) GetNumberOfPage() int {
+	pageObjIds, err := i.pdf.getPageObjIDs()
+	if err != nil {
+		return 0
+	}
+	return len(pageObjIds)
 }
 
 //Insert insert text in to pdf
