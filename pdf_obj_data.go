@@ -53,6 +53,16 @@ func (p *PDFObjData) readProperties() (*PDFObjPropertiesData, error) {
 	return &props, nil
 }
 
+func (p *PDFObjData) setProperties(props *PDFObjPropertiesData) {
+	var data bytes.Buffer
+	data.WriteString("<<\n")
+	for _, prop := range *props {
+		data.WriteString("/" + prop.key + " " + prop.rawVal)
+	}
+	data.WriteString(">>\n")
+	p.data = data.Bytes()
+}
+
 func (p *PDFObjData) encrypt(protection *gopdf.PDFProtection) error {
 
 	stream := []byte("stream")

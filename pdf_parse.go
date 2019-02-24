@@ -29,6 +29,33 @@ func PDFParse(file io.Reader, outPdf *PDFData) error {
 		return err
 	}
 
+	err = setPagesObj(outPdf)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func setPagesObj(pdf *PDFData) error {
+	pagesProps, err := pdf.getObjByID(pdf.trailer.rootObjID).readProperties()
+	if err != nil {
+		return err
+	}
+	pagesProp := pagesProps.getPropByKey("Pages")
+	if pagesProp == nil {
+		return errors.New("/Pages not found")
+	}
+	pagesID, _, err := pagesProp.asDictionary()
+	if err != nil {
+		return err
+	}
+
+	pagesObj := pdf.getObjByID(pagesID)
+	if err != nil {
+		return err
+	}
+	pdf.pagesObj = pagesObj
 	return nil
 }
 
