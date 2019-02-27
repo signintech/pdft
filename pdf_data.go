@@ -41,6 +41,17 @@ func (p *PDFData) putNewObject(pdfobj PDFObjData) int {
 	return newObjID
 }
 
+func (p *PDFData) removeObjByID(objID int) error {
+	for i, id := range p.objIDs {
+		if id == objID {
+			p.objIDs = append(p.objIDs[:i], p.objIDs[i+1:]...)
+			p.objs = append(p.objs[:i], p.objs[i+1:]...)
+			return nil
+		}
+	}
+	return errors.New("Not Found")
+}
+
 //GetObjByID get obj by objid
 func (p *PDFData) getObjByID(objID int) *PDFObjData {
 	for i, id := range p.objIDs {
@@ -467,7 +478,7 @@ func streamLength(p *PDFData, data *[]byte) (int, error) {
 
 	propType := prop.valType()
 	if propType == number {
-		return strconv.Atoi(prop.rawVal)
+		return strconv.Atoi(strings.TrimSpace(prop.rawVal))
 	} else if propType == dictionary {
 		objID, _, err := prop.asDictionary()
 		if err != nil {
@@ -558,7 +569,7 @@ func objIDFromStartObjLine(line string) (int, error) {
 	if len(tokens) < 3 {
 		return 0, errors.New("bad start obj")
 	}
-	id, err := strconv.Atoi(tokens[0])
+	id, err := strconv.Atoi(strings.TrimSpace(tokens[0]))
 	if err != nil {
 		return 0, err
 	}

@@ -20,12 +20,12 @@ func (x *XrefData) parse(xrefline string) error {
 		return errors.New("bad xref format")
 	}
 	var err error
-	x.N10Digit, err = strconv.Atoi(tokens[0])
+	x.N10Digit, err = strconv.Atoi(strings.TrimSpace(tokens[0]))
 	if err != nil {
 		return err
 	}
 
-	x.G5Digit, err = strconv.Atoi(tokens[1])
+	x.G5Digit, err = strconv.Atoi(strings.TrimSpace(tokens[1]))
 	if err != nil {
 		return err
 	}

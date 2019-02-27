@@ -99,6 +99,21 @@ func (i *PDFt) OpenFrom(r io.Reader) error {
 	return nil
 }
 
+// Debug ...
+// func (i *PDFt) Debug() error {
+// 	info := i.pdf.getObjByID(1)
+// 	props, err := info.readProperties()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	props.getPropByKey("Producer").setRaw("PDFt (a47456c)")
+// 	props.getPropByKey("Creator").setRaw("UNKNOW")
+// 	info.setProperties(props)
+
+// 	i.pdf.removeObjByID(6)
+// 	return nil
+// }
+
 // DuplicatePageAfter ...
 func (i *PDFt) DuplicatePageAfter(targetPageNumber, position int) error {
 	pageObjIds, err := i.pdf.getPageObjIDs()
