@@ -20,6 +20,10 @@ type PDFObjPropertyData struct {
 	rawVal string
 }
 
+func (p *PDFObjPropertyData) setRaw(rawVal string) {
+	p.rawVal = rawVal
+}
+
 func (p *PDFObjPropertyData) setAsDictionary(value, revision int) {
 	p.rawVal = fmt.Sprintf("%d %d R", value, revision)
 }
@@ -55,7 +59,7 @@ func propertyType(raw string) string {
 		return object
 	} else if len(raw) > len("[") && raw[0:len("[")] == "[" {
 		return array
-	} else if _, err := strconv.Atoi(raw); err == nil {
+	} else if _, err := strconv.Atoi(strings.TrimSpace(raw)); err == nil {
 		return number
 	}
 	//fmt.Printf("raw=%s\n", raw)

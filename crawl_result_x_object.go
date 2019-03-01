@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 type crawlResultXObjects []crawlResultXObject
@@ -27,7 +28,7 @@ func (c *crawlResultXObjects) parse(propVal *[]byte) error {
 
 		var xObj crawlResultXObject
 		xObj.xObjChar = tokens[1]
-		xObjIndex, err := strconv.Atoi(tokens[2])
+		xObjIndex, err := strconv.Atoi(strings.TrimSpace(tokens[2]))
 		if err != nil {
 			return err
 		}
