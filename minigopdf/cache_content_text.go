@@ -7,6 +7,9 @@ import (
 	"strconv"
 )
 
+//FontPrefixDefault  default prefix of font
+const FontPrefixDefault = "F"
+
 //ContentTypeCell cell
 const ContentTypeCell = 0
 
@@ -128,7 +131,7 @@ func (c *cacheContentText) toStream(protection *PDFProtection) (*bytes.Buffer, e
 
 	stream.WriteString("BT\n")
 	stream.WriteString(fmt.Sprintf("%0.2f %0.2f TD\n", x, y))
-	stream.WriteString("/F" + strconv.Itoa(c.fontCountIndex) + " " + strconv.Itoa(c.fontSize) + " Tf\n")
+	stream.WriteString("/" + FontPrefixDefault + strconv.Itoa(c.fontCountIndex) + " " + strconv.Itoa(c.fontSize) + " Tf\n") //HERE
 	if r+g+b != 0 {
 		rFloat := float64(r) * 0.00392156862745
 		gFloat := float64(g) * 0.00392156862745
@@ -383,6 +386,7 @@ func (c *CacheContent) Setup(rectangle *Rect,
 
 //WriteTextToContent write text to content
 func (c *CacheContent) WriteTextToContent(text string) {
+	//fmt.Printf(c.cacheContentText.text.String())
 	c.cacheContentText.text.WriteString(text)
 }
 

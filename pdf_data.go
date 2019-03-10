@@ -443,6 +443,8 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 
 			if _, ok := pageBuffs[pageIndex+1]; ok {
 				stm.WriteString("\n")
+				//fmt.Print(stm.String())
+				//stm.Reset()
 				pageBuffs[pageIndex+1].WriteTo(stm)
 				objMustReplaces[contentsObjID] = fmt.Sprintf("<<\n/Length %d\n>>\nstream\n%sendstream", stm.Len(), stm.String())
 			}
@@ -452,7 +454,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 
 	for objID := range objMustReplaces {
 		//_ = objID
-		//fmt.Printf("objID=%d\n", objID)
+		fmt.Printf("objID=%d\n", objID)
 		p.getObjByID(objID).data = []byte("" + objMustReplaces[objID] + "")
 		//fmt.Printf("objId=%d %s\n", objID, string(p.getObjByID(objID).data))
 	}

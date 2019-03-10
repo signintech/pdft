@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
 type crawlResultFonts []crawlResultFont
@@ -18,7 +20,8 @@ func (c *crawlResultFonts) parse(propVal *[]byte) error {
 
 	for _, prop := range props {
 		var crFont crawlResultFont
-		fontIndex, err := strconv.Atoi(strings.TrimSpace(strings.Replace(prop.key, "F", "", -1)))
+		//fontIndex, err := strconv.Atoi(strings.TrimSpace(strings.Replace(prop.key, "F", "", -1)))
+		prefix, fontIndex, err := c.getFontIndex(prop.key)
 		if err != nil {
 			return err
 		}
@@ -26,6 +29,7 @@ func (c *crawlResultFonts) parse(propVal *[]byte) error {
 		if err != nil {
 			return err
 		}
+		crFont.fontPrefix = prefix
 		crFont.fontIndex = fontIndex
 		crFont.fontObjID = objID
 		*c = append(*c, crFont)
@@ -33,11 +37,47 @@ func (c *crawlResultFonts) parse(propVal *[]byte) error {
 	return nil
 }
 
+func (c crawlResultFonts) getFontIndex(key string) (string, int, error) {
+	//fmt.Printf("key=%s\n", key)
+	ss := []rune(key)
+	ssSize := len(ss)
+	var nn []string
+	for i := ssSize - 1; i >= 0; i-- {
+		//fmt.Printf("%s\n", string(rs[i]))
+		s := string(ss[i])
+		_, err := strconv.Atoi(s)
+		if err != nil {
+			break
+		}
+		nn = append(nn, s)
+	}
+
+	var buff bytes.Buffer
+	nnSize := len(nn)
+	for i := nnSize - 1; i >= 0; i-- {
+		buff.WriteString(nn[i])
+	}
+
+	prefix := string(ss[0 : ssSize-nnSize])
+
+	n, err := strconv.Atoi(buff.String())
+	if err != nil {
+		return "", 0, err
+	}
+	//fmt.Printf("%s  %d   %d\n", prefix, n, nnSize)
+	return prefix, n, nil
+}
+
 func (c *crawlResultFonts) String() string {
 	var buff bytes.Buffer
 	for _, f := range *c {
-		buff.WriteString(fmt.Sprintf("/F%d %d 0 R\n", f.fontIndex, f.fontObjID))
+		prefix := strings.TrimSpace(f.fontPrefix)
+		if prefix == "" {
+			prefix = gopdf.FontPrefixDefault
+		}
+		buff.WriteString(fmt.Sprintf("/%s%d %d 0 R\n", prefix, f.fontIndex, f.fontObjID))
 	}
+	fmt.Printf("%s\n", buff.String())
 	return buff.String()
 }
 
@@ -59,6 +99,7 @@ func (c *crawlResultFonts) maxFontIndex() int {
 }
 
 type crawlResultFont struct {
-	fontIndex int
-	fontObjID int
+	fontPrefix string
+	fontIndex  int
+	fontObjID  int
 }
