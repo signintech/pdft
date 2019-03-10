@@ -413,7 +413,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 				if err != nil || len(contentsObjIDs) <= 0 {
 					return err
 				}
-				contentsObjID = contentsObjIDs[0]
+				contentsObjID = contentsObjIDs[len(contentsObjIDs)-1]
 			} else {
 				return errors.New("not support /Contents type not dictionary,array yet")
 			}
