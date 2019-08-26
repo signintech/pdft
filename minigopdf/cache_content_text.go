@@ -391,3 +391,10 @@ func (c *CacheContent) ToStream(protection *PDFProtection) (*bytes.Buffer, error
 	c.cacheContentText.createContent()
 	return c.cacheContentText.toStream(protection)
 }
+
+// MeasureTextWidth measure text width
+func (c *CacheContent) MeasureTextWidth(text string) (float64, error) {
+	c.WriteTextToContent(text)
+	_, _, err := c.cacheContentText.createContent()
+	return float64(c.cacheContentText.textWidthPdfUnit), err
+}

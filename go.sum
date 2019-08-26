@@ -1,0 +1,6 @@
+github.com/phpdave11/gofpdi v1.0.5/go.mod h1:B7ryN7q4MLItB8BDM5PJAplblJegAAcaI98viOZUihg=
+github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+github.com/signintech/gopdf v0.9.2 h1:Kr6ITK4V/ITQkl8WRkyUAQfchVFKrHCDaR0zuITljMY=
+github.com/signintech/gopdf v0.9.2/go.mod h1:foMS8ea6XfGo/jO8ImNTrHPwMFIxmpQrJcvo3UAwlos=
+github.com/signintech/pdft v0.2.0 h1:tqyvUUSVU/9Xaq+lbJ1Aa2T+JSo2+NOSRY/uvE8ur/s=
+github.com/signintech/pdft v0.2.0/go.mod h1:Ja7ckj2YPVomD/onHjYFQKnMPZV2Sp2QVsu1OOlZN9s=
