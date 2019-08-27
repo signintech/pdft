@@ -95,9 +95,8 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 	isEmbedResources := false
 	rootOfXObjectID := -1
 	resourcesContent := ""
-	var cwRes crawl
-	cwRes.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources")
-	err = cwRes.run()
+	cp := crawlPages{}
+	cwRes, _ := cp.getPageCrawl(p, p.trailer.rootObjID, "Kids", "Resources")
 	if err != nil {
 		return err
 	}
@@ -156,9 +155,9 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 	}
 
 	if !found { //ถ้ายังไม่เจออีก
-		//cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "XObject")
-		cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "XObject")
-		err = cw.run()
+		cp2 := crawlPages{}
+		cw2, _ := cp2.getPageCrawl(p, p.trailer.rootObjID, "Kids", "Resources", "XObject")
+		cw = *cw2
 		if err != nil {
 			return err
 		}
@@ -258,16 +257,14 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 }
 
 func (p *PDFData) injectFontsToPDF(fontDatas map[string]*PDFFontData) error {
-
 	var err error
-	var cw crawl
-	cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "Font")
-	err = cw.run()
+	cp := crawlPages{}
+	cw, _ := cp.getPageCrawl(p, p.trailer.rootObjID, "Kids", "Resources", "Font")
 	if err != nil {
 		return err
 	}
 
-	maxFontIndex, err := findMaxFontIndex(&cw, p)
+	maxFontIndex, err := findMaxFontIndex(cw, p)
 	if err != nil {
 		return err
 	}
@@ -327,13 +324,6 @@ func (p *PDFData) injectFontsToPDF(fontDatas map[string]*PDFFontData) error {
 func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 
 	var err error
-	var cw crawl
-	cw.set(p, p.trailer.rootObjID, "Pages", "Kids")
-	err = cw.run()
-	if err != nil {
-		return err
-	}
-
 	pageBuffs := make(map[int]*bytes.Buffer)
 	for _, ctn := range *contenters {
 		pageNum := ctn.page()
@@ -353,33 +343,13 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 			return err
 		}
 	}
-
-	var pageObjIDs []int
-	for _, r := range cw.results { //วน แต่ละ obj
-		var propKidsVal string
-		propKidsVal, err = r.valOf("Kids")
-		if err == ErrCrawlResultValOfNotFound {
-			continue
-		}
-
-		propKidsValType := propertyType(propKidsVal)
-		if propKidsValType != array {
-			return errors.New("not support /Kids type not array yet")
-		}
-
-		pageObjIDs, _, err = readObjIDFromDictionaryArr(propKidsVal)
-		//	fmt.Printf("pageObjIDs = %#v\n%s\\n\n", pageObjIDs, propKidsVal)
-		if err != nil {
-			return err
-		}
-
-	}
-
+	cp := crawlPages{}
+	cwt, _ := cp.getPageCrawl(p, p.trailer.rootObjID, "Kids", "Parent")
+	pageObjIDs, _ := cp.getPageObjIDs(cwt)
 	objMustReplaces := make(map[int]string)
 	for pageIndex, pageObjID := range pageObjIDs {
 
 		var cw2Content crawl
-		//fmt.Printf("cw2Content.set = %d\n\n", pageObjID)
 		cw2Content.set(p, pageObjID, "Contents")
 		err = cw2Content.run()
 		if err != nil {
@@ -391,9 +361,9 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 			//fmt.Printf("%s\n\n", r.String())
 
 			var propContentsVal string
-			//fmt.Printf("id=%d\n", id)
+			// fmt.Printf("id=%d\n", id)
 			propContentsVal, err = r.valOf("Contents")
-			//fmt.Printf("%d propContentsVal=%s\n\n", id, propContentsVal)
+			// fmt.Printf("%d propContentsVal=%s\n\n", 0, r.String())
 			if err == ErrCrawlResultValOfNotFound {
 				continue
 			}
