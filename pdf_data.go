@@ -54,29 +54,73 @@ func (p *PDFData) removeObjByID(objID int) error {
 
 //GetObjByID get obj by objid
 func (p *PDFData) getObjByID(objID int) *PDFObjData {
+	// if pdf exists annotations, it will have multiple same objID. So, need find right obj.
+	indexArr := []int{}
 	for i, id := range p.objIDs {
 		if id == objID {
-			return &p.objs[i]
+			indexArr = append(indexArr, i)
 		}
+	}
+	if len(indexArr) == 1 {
+		return &p.objs[indexArr[0]]
+	} else if len(indexArr) > 1 {
+		result := &p.objs[indexArr[0]]
+		for _, i := range indexArr {
+			if props, err := (&p.objs[i]).readProperties(); err == nil && props.getPropByKey("Annots") != nil {
+				result = &p.objs[i]
+			}
+		}
+		return result
 	}
 	return nil
 }
 
+func (p *PDFData) getPageCrawl(objID int, path ...string) (*crawl, error) {
+	var cw crawl
+	pagePath := append([]string{"Pages"}, path...)
+	cw.set(p, objID, pagePath...)
+	cw.run()
+	checkedQueue := []int{}
+	for k := range cw.results {
+		checkedQueue = append(checkedQueue, k)
+	}
+	for len(checkedQueue) > 0 {
+		key := checkedQueue[0]
+		if s := cw.results[key].String(); strings.Contains(s, "/Pages") && strings.Contains(s, "/Parent") {
+			var subCw crawl
+			subCw.set(p, key, path...)
+			subCw.run()
+			for k, v := range subCw.results {
+				cw.results[k] = v
+				if _, ok := cw.results[k]; !ok {
+					checkedQueue = append(checkedQueue, k)
+				}
+			}
+		}
+		checkedQueue = checkedQueue[1:]
+	}
+	return &cw, nil
+}
+
 // getPagesObjID return number of page of the pdf
 func (p *PDFData) getPageObjIDs() ([]int, error) {
-	pagesProp, err := p.pagesObj.readProperties()
-	if err != nil {
-		return nil, err
+	cw, _ := p.getPageCrawl(p.trailer.rootObjID, "Kids", "Parent")
+	results := []int{}
+	for k, v := range cw.results {
+		if s := v.String(); !strings.Contains(s, "/Pages") && strings.Contains(s, "/Page") && strings.Contains(s, "/Parent") {
+			results = append(results, k)
+		}
 	}
-	pagesKids := pagesProp.getPropByKey("Kids")
-	if pagesKids == nil {
-		return nil, errors.New("Not found Kids property in this object")
+	for i := 0; i < len(results)-1; i++ {
+		for j := i + 1; j < len(results); j++ {
+			if results[j] < results[i] {
+				t := results[i]
+				results[i] = results[j]
+				results[j] = t
+			}
+		}
 	}
-	listPagesObjID, _, err := pagesKids.asDictionaryArr()
-	if err != nil {
-		return nil, err
-	}
-	return listPagesObjID, err
+	return results, nil
 }
 
 func (p *PDFData) maxID() int {
@@ -95,8 +139,7 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 	isEmbedResources := false
 	rootOfXObjectID := -1
 	resourcesContent := ""
-	cp := crawlPages{}
-	cwRes, _ := cp.getPageCrawl(p, p.trailer.rootObjID, "Kids", "Resources")
+	cwRes, _ := p.getPageCrawl(p.trailer.rootObjID, "Kids", "Resources")
 	if err != nil {
 		return err
 	}
@@ -155,8 +198,7 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 	}
 
 	if !found { //ถ้ายังไม่เจออีก
-		cp2 := crawlPages{}
-		cw2, _ := cp2.getPageCrawl(p, p.trailer.rootObjID, "Kids", "Resources", "XObject")
+		cw2, _ := p.getPageCrawl(p.trailer.rootObjID, "Kids", "Resources", "XObject")
 		cw = *cw2
 		if err != nil {
 			return err
@@ -258,8 +300,7 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 
 func (p *PDFData) injectFontsToPDF(fontDatas map[string]*PDFFontData) error {
 	var err error
-	cp := crawlPages{}
-	cw, _ := cp.getPageCrawl(p, p.trailer.rootObjID, "Kids", "Resources", "Font")
+	cw, _ := p.getPageCrawl(p.trailer.rootObjID, "Kids", "Resources", "Font")
 	if err != nil {
 		return err
 	}
@@ -343,9 +384,7 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 			return err
 		}
 	}
-	cp := crawlPages{}
-	cwt, _ := cp.getPageCrawl(p, p.trailer.rootObjID, "Kids", "Parent")
-	pageObjIDs, _ := cp.getPageObjIDs(cwt)
+	pageObjIDs, _ := p.getPageObjIDs()
 	objMustReplaces := make(map[int]string)
 	for pageIndex, pageObjID := range pageObjIDs {
 
