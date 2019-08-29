@@ -54,7 +54,7 @@ func (p *PDFData) removeObjByID(objID int) error {
 
 //GetObjByID get obj by objid
 func (p *PDFData) getObjByID(objID int) *PDFObjData {
-	// if pdf exists annotations, it will have multiple same objID. So, need find right obj.
+	// if pdf exists annotations, it will have multiple same objIDs. So, need find the right one.
 	indexArr := []int{}
 	for i, id := range p.objIDs {
 		if id == objID {
@@ -75,6 +75,7 @@ func (p *PDFData) getObjByID(objID int) *PDFObjData {
 	return nil
 }
 
+// getPageCrawl use crawl, supporting for page nesting
 func (p *PDFData) getPageCrawl(objID int, path ...string) (*crawl, error) {
 	var cw crawl
 	pagePath := append([]string{"Pages"}, path...)
@@ -102,24 +103,48 @@ func (p *PDFData) getPageCrawl(objID int, path ...string) (*crawl, error) {
 	return &cw, nil
 }
 
-// getPagesObjID return number of page of the pdf
+// getPageObjIDs get page obj IDs
 func (p *PDFData) getPageObjIDs() ([]int, error) {
-	cw, _ := p.getPageCrawl(p.trailer.rootObjID, "Kids", "Parent")
 	results := []int{}
-	for k, v := range cw.results {
-		if s := v.String(); !strings.Contains(s, "/Pages") && strings.Contains(s, "/Page") && strings.Contains(s, "/Parent") {
-			results = append(results, k)
+	rootProps, _ := p.getObjByID(p.trailer.rootObjID).readProperties()
+	rootPagesID, _, _ := rootProps.getPropByKey("Pages").asDictionary()
+	objProps := map[int]*PDFObjPropertiesData{} // cache props
+	getObjProps := func(id int) *PDFObjPropertiesData {
+		if v, ok := objProps[id]; ok {
+			return v
 		}
+		if data, err := p.getObjByID(id).readProperties(); err == nil {
+			objProps[id] = data
+			return objProps[id]
+		}
+		return nil
 	}
-	for i := 0; i < len(results)-1; i++ {
-		for j := i + 1; j < len(results); j++ {
-			if results[j] < results[i] {
-				t := results[i]
-				results[i] = results[j]
-				results[j] = t
+	getKids := func(id int) []int {
+		if props := getObjProps(id); props != nil {
+			if pages, kid := props.getPropByKey("Pages"), props.getPropByKey("Kids"); pages != nil && kid != nil {
+				kidIDs, _, _ := kid.asDictionaryArr()
+				return kidIDs
 			}
 		}
+		return nil
 	}
+	isPage := func(id int) bool {
+		if props := getObjProps(id); props != nil {
+			return props.getPropByKey("Page") != nil
+		}
+		return false
+	}
+	var visit func(id int) // Preorder Traversal, supporting for page nesting
+	visit = func(id int) {
+		if kids := getKids(id); kids != nil {
+			for _, kid := range kids {
+				visit(kid)
+			}
+		} else if isPage(id) {
+			results = append(results, id)
+		}
+	}
+	visit(rootPagesID)
 	return results, nil
 }
 
