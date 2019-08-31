@@ -1,7 +1,6 @@
 package pdft
 
 import (
-	"fmt"
 	"testing"
 
 	gopdf "github.com/signintech/pdft/minigopdf"
@@ -23,7 +22,6 @@ func TestPDF(t *testing.T) {
 }
 
 func pdf(t *testing.T, filename string) {
-	fmt.Printf("\n\n\n####Open %s ####\n\n", filename)
 	var ipdf PDFt
 	//err := ipdf.Open("test/pdf/pdf_from_docx_with_f.pdf")
 	err := ipdf.Open("test/pdf/" + filename)
@@ -61,6 +59,65 @@ func pdf(t *testing.T, filename string) {
 		t.Error(err)
 		return
 	}
+}
+
+func TestMeasureTextWidth(t *testing.T) {
+
+	filename := "pdf_from_docx_with_f.pdf"
+	var ipdf PDFt
+	//err := ipdf.Open("test/pdf/pdf_from_docx_with_f.pdf")
+	err := ipdf.Open("test/pdf/" + filename)
+	//err := ipdf.Open("test/pdf/pdf_from_docx.pdf")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = ipdf.AddFont("arial", "test/ttf/angsa.ttf")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = ipdf.SetFont("arial", "", 14)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	width1, err := ipdf.MeasureTextWidth("การปั้นโต้ง")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	width2, err := ipdf.MeasureTextWidth("การปั้นโต้งการปั้นโต้ง")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = ipdf.SetFont("arial", "", 15)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	width3, err := ipdf.MeasureTextWidth("การปั้นโต้ง")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if width1*2 != width2 {
+		t.Error("width1 * 2 != width2")
+	}
+
+	if width1 == width3 {
+		t.Error("width1 == width3")
+	}
+
+	//gitfmt.Printf("%f %f %f\n", width1, width2, width3)
 }
 
 /*
