@@ -54,29 +54,98 @@ func (p *PDFData) removeObjByID(objID int) error {
 
 //GetObjByID get obj by objid
 func (p *PDFData) getObjByID(objID int) *PDFObjData {
+	// if pdf exists annotations, it will have multiple same objIDs. So, need find the right one.
+	indexArr := []int{}
 	for i, id := range p.objIDs {
 		if id == objID {
-			return &p.objs[i]
+			indexArr = append(indexArr, i)
 		}
+	}
+	if len(indexArr) == 1 {
+		return &p.objs[indexArr[0]]
+	} else if len(indexArr) > 1 {
+		result := &p.objs[indexArr[0]]
+		for _, i := range indexArr {
+			if props, err := (&p.objs[i]).readProperties(); err == nil && props.getPropByKey("Annots") != nil {
+				result = &p.objs[i]
+			}
+		}
+		return result
 	}
 	return nil
 }
 
-// getPagesObjID return number of page of the pdf
+// getPageCrawl use crawl, supporting for page nesting
+func (p *PDFData) getPageCrawl(objID int, path ...string) (*crawl, error) {
+	var cw crawl
+	pagePath := append([]string{"Pages"}, path...)
+	cw.set(p, objID, pagePath...)
+	cw.run()
+	checkedQueue := []int{}
+	for k := range cw.results {
+		checkedQueue = append(checkedQueue, k)
+	}
+	for len(checkedQueue) > 0 {
+		key := checkedQueue[0]
+		if s := cw.results[key].String(); strings.Contains(s, "/Pages") && strings.Contains(s, "/Parent") {
+			var subCw crawl
+			subCw.set(p, key, path...)
+			subCw.run()
+			for k, v := range subCw.results {
+				cw.results[k] = v
+				if _, ok := cw.results[k]; !ok {
+					checkedQueue = append(checkedQueue, k)
+				}
+			}
+		}
+		checkedQueue = checkedQueue[1:]
+	}
+	return &cw, nil
+}
+
+// getPageObjIDs get page obj IDs
 func (p *PDFData) getPageObjIDs() ([]int, error) {
-	pagesProp, err := p.pagesObj.readProperties()
-	if err != nil {
-		return nil, err
+	results := []int{}
+	rootProps, _ := p.getObjByID(p.trailer.rootObjID).readProperties()
+	rootPagesID, _, _ := rootProps.getPropByKey("Pages").asDictionary()
+	objProps := map[int]*PDFObjPropertiesData{} // cache props
+	getObjProps := func(id int) *PDFObjPropertiesData {
+		if v, ok := objProps[id]; ok {
+			return v
+		}
+		if data, err := p.getObjByID(id).readProperties(); err == nil {
+			objProps[id] = data
+			return objProps[id]
+		}
+		return nil
 	}
-	pagesKids := pagesProp.getPropByKey("Kids")
-	if pagesKids == nil {
-		return nil, errors.New("Not found Kids property in this object")
+	getKids := func(id int) []int {
+		if props := getObjProps(id); props != nil {
+			if pages, kid := props.getPropByKey("Pages"), props.getPropByKey("Kids"); pages != nil && kid != nil {
+				kidIDs, _, _ := kid.asDictionaryArr()
+				return kidIDs
+			}
+		}
+		return nil
 	}
-	listPagesObjID, _, err := pagesKids.asDictionaryArr()
-	if err != nil {
-		return nil, err
+	isPage := func(id int) bool {
+		if props := getObjProps(id); props != nil {
+			return props.getPropByKey("Page") != nil
+		}
+		return false
 	}
-	return listPagesObjID, err
+	var visit func(id int) // Preorder Traversal, supporting for page nesting
+	visit = func(id int) {
+		if kids := getKids(id); kids != nil {
+			for _, kid := range kids {
+				visit(kid)
+			}
+		} else if isPage(id) {
+			results = append(results, id)
+		}
+	}
+	visit(rootPagesID)
+	return results, nil
 }
 
 func (p *PDFData) maxID() int {
@@ -95,9 +164,7 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 	isEmbedResources := false
 	rootOfXObjectID := -1
 	resourcesContent := ""
-	var cwRes crawl
-	cwRes.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources")
-	err = cwRes.run()
+	cwRes, _ := p.getPageCrawl(p.trailer.rootObjID, "Kids", "Resources")
 	if err != nil {
 		return err
 	}
@@ -156,9 +223,8 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 	}
 
 	if !found { //ถ้ายังไม่เจออีก
-		//cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "XObject")
-		cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "XObject")
-		err = cw.run()
+		cw2, _ := p.getPageCrawl(p.trailer.rootObjID, "Kids", "Resources", "XObject")
+		cw = *cw2
 		if err != nil {
 			return err
 		}
@@ -258,16 +324,13 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 }
 
 func (p *PDFData) injectFontsToPDF(fontDatas map[string]*PDFFontData) error {
-
 	var err error
-	var cw crawl
-	cw.set(p, p.trailer.rootObjID, "Pages", "Kids", "Resources", "Font")
-	err = cw.run()
+	cw, _ := p.getPageCrawl(p.trailer.rootObjID, "Kids", "Resources", "Font")
 	if err != nil {
 		return err
 	}
 
-	maxFontIndex, err := findMaxFontIndex(&cw, p)
+	maxFontIndex, err := findMaxFontIndex(cw, p)
 	if err != nil {
 		return err
 	}
@@ -327,13 +390,6 @@ func (p *PDFData) injectFontsToPDF(fontDatas map[string]*PDFFontData) error {
 func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 
 	var err error
-	var cw crawl
-	cw.set(p, p.trailer.rootObjID, "Pages", "Kids")
-	err = cw.run()
-	if err != nil {
-		return err
-	}
-
 	pageBuffs := make(map[int]*bytes.Buffer)
 	for _, ctn := range *contenters {
 		pageNum := ctn.page()
@@ -353,33 +409,11 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 			return err
 		}
 	}
-
-	var pageObjIDs []int
-	for _, r := range cw.results { //วน แต่ละ obj
-		var propKidsVal string
-		propKidsVal, err = r.valOf("Kids")
-		if err == ErrCrawlResultValOfNotFound {
-			continue
-		}
-
-		propKidsValType := propertyType(propKidsVal)
-		if propKidsValType != array {
-			return errors.New("not support /Kids type not array yet")
-		}
-
-		pageObjIDs, _, err = readObjIDFromDictionaryArr(propKidsVal)
-		//	fmt.Printf("pageObjIDs = %#v\n%s\\n\n", pageObjIDs, propKidsVal)
-		if err != nil {
-			return err
-		}
-
-	}
-
+	pageObjIDs, _ := p.getPageObjIDs()
 	objMustReplaces := make(map[int]string)
 	for pageIndex, pageObjID := range pageObjIDs {
 
 		var cw2Content crawl
-		//fmt.Printf("cw2Content.set = %d\n\n", pageObjID)
 		cw2Content.set(p, pageObjID, "Contents")
 		err = cw2Content.run()
 		if err != nil {
@@ -391,9 +425,9 @@ func (p *PDFData) injectContentToPDF(contenters *[]Contenter) error {
 			//fmt.Printf("%s\n\n", r.String())
 
 			var propContentsVal string
-			//fmt.Printf("id=%d\n", id)
+			// fmt.Printf("id=%d\n", id)
 			propContentsVal, err = r.valOf("Contents")
-			//fmt.Printf("%d propContentsVal=%s\n\n", id, propContentsVal)
+			// fmt.Printf("%d propContentsVal=%s\n\n", 0, r.String())
 			if err == ErrCrawlResultValOfNotFound {
 				continue
 			}

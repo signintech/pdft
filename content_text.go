@@ -3,7 +3,7 @@ package pdft
 import (
 	"bytes"
 
-	"github.com/signintech/pdft/minigopdf"
+	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
 //ContentText text in pdf
@@ -79,4 +79,31 @@ func (c *ContentText) toSteram() (*bytes.Buffer, error) {
 
 func (c *ContentText) page() int {
 	return c.pageNum
+}
+
+func (c *ContentText) measureTextWidth() (float64, error) {
+	var cc gopdf.CacheContent
+	cc.Setup(
+		&gopdf.Rect{
+			W: c.w,
+			H: c.h,
+		},
+		gopdf.Rgb{},
+		1.0,
+		c.pdfFontData.fontIndex(),
+		c.fontSize,
+		c.fontStyle,
+		0,
+		0,
+		0,
+		&c.pdfFontData.font,
+		pageHeight(),
+		gopdf.ContentTypeText,
+		gopdf.CellOption{
+			Align:  c.align,
+			Border: 0,
+		},
+		c.lineWidth,
+	)
+	return cc.MeasureTextWidth(c.text)
 }

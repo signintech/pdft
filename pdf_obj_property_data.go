@@ -82,10 +82,9 @@ func readProperties(rawObj *[]byte, outProps *PDFObjPropertiesData) error {
 	if index != -1 { //เป็น stream
 		tmp0 = tmp0[0:index]
 	}
-
 	startObjInx := strings.Index(string(tmp0), "<<")
 	endObjInx := strings.LastIndex(string(tmp0), ">>")
-	if startObjInx > endObjInx {
+	if startObjInx > endObjInx || startObjInx == -1 || endObjInx == -1 {
 		return errors.New("bad obj properties")
 	}
 
