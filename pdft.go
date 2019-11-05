@@ -177,7 +177,6 @@ func (i *PDFt) GetNumberOfPage() int {
 
 //Insert insert text in to pdf
 func (i *PDFt) Insert(text string, pageNum int, x float64, y float64, w float64, h float64, align int) error {
-
 	var ct ContentText
 	ct.text = text
 	ct.fontName = i.curr.fontName
@@ -197,6 +196,23 @@ func (i *PDFt) Insert(text string, pageNum int, x float64, y float64, w float64,
 	ct.pdfFontData = i.fontDatas[ct.fontName]
 	i.contenters = append(i.contenters, &ct)
 	return i.fontDatas[ct.fontName].addChars(text)
+}
+
+// MeasureTextWidth measure text width
+func (i *PDFt) MeasureTextWidth(text string) (float64, error) {
+	i.fontDatas[i.curr.fontName].addChars(text)
+	var ct ContentText
+	ct.text = text
+	ct.fontName = i.curr.fontName
+	ct.fontStyle = i.curr.fontStyle
+	ct.fontSize = i.curr.fontSize
+	ct.lineWidth = i.curr.lineWidth
+	if _, have := i.fontDatas[ct.fontName]; !have {
+		return 0, ErrFontNameNotFound
+	}
+	ct.pdfFontData = i.fontDatas[ct.fontName]
+	width, err := ct.measureTextWidth()
+	return width, err
 }
 
 //InsertImgBase64 insert img base 64
