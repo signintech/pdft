@@ -270,7 +270,6 @@ func (i *PDFt) InsertImgWithCache(img []byte, pageNum int, x float64, y float64,
 	var pdfimg *PDFImageData
 	if val, ok := i.pdfImgsMd5Map[md5Str]; ok {
 		pdfimg = val
-		fmt.Println("cache")
 	} else {
 		pdfimg = &PDFImageData{}
 		err := pdfimg.setImg(img)
