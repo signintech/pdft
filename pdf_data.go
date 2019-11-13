@@ -159,7 +159,6 @@ func (p *PDFData) maxID() int {
 }
 
 func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
-
 	var err error
 	isEmbedResources := false
 	rootOfXObjectID := -1
@@ -275,13 +274,29 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 	objMustReplaces := make(map[int]string)
 	if found {
 		for objID, r := range cw.results {
-			_, err = r.valOf("XObject")
+			var oldXObjectStr string
+			oldXObjectStr, err = r.valOf("XObject")
 			if err == ErrCrawlResultValOfNotFound {
 				continue
 			} else if err != nil {
 				return err
 			}
-			r.setValOf("XObject", fmt.Sprintf("<<%s>>\n", xobjs.String()))
+			var newXObjs crawlResultXObjects
+			bOldXObjectStr := []byte(oldXObjectStr)
+			newXObjs.parse(&bOldXObjectStr)
+			for _, xobj := range xobjs { // pick new item from xobjs into newXObjs
+				isExisted := false
+				for _, existedXObj := range newXObjs {
+					if existedXObj.xObjChar == xobj.xObjChar && existedXObj.xObjIndex == xobj.xObjIndex { // Avoid conflict of same xObjIndex when editing emerged pdf
+						isExisted = true
+						break
+					}
+				}
+				if !isExisted {
+					newXObjs = append(newXObjs, xobj)
+				}
+			}
+			r.setValOf("XObject", fmt.Sprintf("<<%s>>\n", newXObjs.String()))
 			objMustReplaces[objID] = r.String()
 		}
 	} else {
