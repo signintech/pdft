@@ -33,15 +33,25 @@ if err != nil {
     panic(err) 
 }
 
-//read image file
+// measure text width
+var textWidth float64
+textWidth, err = pt.MeasureTextWidth("Hi")
+
+// read image file
 pic, err := ioutil.ReadFile(picPath)
 if err != nil {
 	panic("Couldn't read pic.")
 }
 
  
-//insert image to pdf
+// insert image to pdf
 err = pt.InsertImg(pic, 1, 182.0, 165.0, 172.0, 49.0)
+if err != nil {
+	panic("Couldn't insert image")
+}
+
+// insert image to pdf with cache, avoiding redundant data when inserting same images many times
+err = pt.InsertImgWithCache(pic, 1, 182.0, 165.0, 172.0, 49.0)
 if err != nil {
 	panic("Couldn't insert image")
 }

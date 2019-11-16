@@ -2,6 +2,7 @@ package pdft
 
 import (
 	"bytes"
+	"crypto/md5"
 	"errors"
 	"fmt"
 	"io"
@@ -37,6 +38,7 @@ type PDFt struct {
 	pdf           PDFData
 	fontDatas     map[string]*PDFFontData
 	pdfImgs       []*PDFImageData
+	pdfImgsMd5Map map[string]*PDFImageData
 	curr          current
 	contenters    []Contenter
 	pdfProtection *gopdf.PDFProtection
@@ -88,6 +90,7 @@ func (i *PDFt) OpenFrom(r io.Reader) error {
 	//init
 	i.fontDatas = make(map[string]*PDFFontData)
 	i.curr.lineWidth = 1.0
+	i.pdfImgsMd5Map = make(map[string]*PDFImageData)
 	//open
 	err := PDFParse(r, &i.pdf)
 	if err != nil {
@@ -258,6 +261,32 @@ func (i *PDFt) InsertImg(img []byte, pageNum int, x float64, y float64, w float6
 	i.contenters = append(i.contenters, &ct)
 	//fmt.Printf("append(i.contenters, &ct) %d\n", len(i.contenters))
 	//i.insertContenters(0, &ct)
+	return nil
+}
+
+//InsertImgWithCache insert img with cache
+func (i *PDFt) InsertImgWithCache(img []byte, pageNum int, x float64, y float64, w float64, h float64) error {
+	md5Str := fmt.Sprintf("%x", md5.Sum(img))
+	var pdfimg *PDFImageData
+	if val, ok := i.pdfImgsMd5Map[md5Str]; ok {
+		pdfimg = val
+	} else {
+		pdfimg = &PDFImageData{}
+		err := pdfimg.setImg(img)
+		if err != nil {
+			return err
+		}
+		i.pdfImgs = append(i.pdfImgs, pdfimg)
+		i.pdfImgsMd5Map[md5Str] = pdfimg
+	}
+	var ct contentImgBase64
+	ct.pageNum = pageNum
+	ct.x = x
+	ct.y = y
+	ct.h = h
+	ct.w = w
+	ct.refPdfimg = pdfimg
+	i.contenters = append(i.contenters, &ct)
 	return nil
 }
 
