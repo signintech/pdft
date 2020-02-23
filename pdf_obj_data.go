@@ -30,7 +30,8 @@ func (p *PDFObjData) parse(raw *[]byte, stratoffset int) error {
 	}
 
 	startObjOffsetAfter := startObjIndex[0][1]
-	startObjLine := tmp[0:startObjOffsetAfter]
+	startObjOffset := startObjIndex[0][0]
+	startObjLine := tmp[startObjOffset:startObjOffsetAfter]
 	data := tmp[startObjOffsetAfter:]
 	objID, err := objIDFromStartObjLine(string(startObjLine))
 	if err != nil {
