@@ -90,12 +90,12 @@ func readProperties(rawObj *[]byte, outProps *PDFObjPropertiesData) error {
 
 	//fmt.Printf("\n\n%s\n\n%d\n", string(*rawObj), endObjInx)
 
-	var regexpSlash = regexp.MustCompile("[\\n\\t ]+\\/")
-	var regexpOpenB = regexp.MustCompile("[\\n\\t ]+\\[")
-	var regexpCloseB = regexp.MustCompile("[\\n\\t ]+\\]")
-	var regexpOpen = regexp.MustCompile("[\\n\\t ]+\\<\\<")
-	var regexpClose = regexp.MustCompile("[\\n\\t ]+\\>\\>")
-	var regexpLine = regexp.MustCompile("[\\n\\t ]+")
+	var regexpSlash = regexp.MustCompile("[\\r\\n\\t ]+\\/")
+	var regexpOpenB = regexp.MustCompile("[\\r\\n\\t ]+\\[")
+	var regexpCloseB = regexp.MustCompile("[\\r\\n\\t ]+\\]")
+	var regexpOpen = regexp.MustCompile("[\\r\\n\\t ]+\\<\\<")
+	var regexpClose = regexp.MustCompile("[\\r\\n\\t ]+\\>\\>")
+	var regexpLine = regexp.MustCompile("[\\r\\n\\t ]+")
 
 	tmp := strings.TrimSpace(string((*rawObj)[startObjInx+len("<<") : endObjInx]))
 	tmp = regexpLine.ReplaceAllString(tmp, " ")
