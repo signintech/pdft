@@ -38,7 +38,6 @@ func (c *crawlResultFonts) parse(propVal *[]byte) error {
 		var crFont crawlResultFont
 
 		prefix, fontIndex, err := splitFont(strings.TrimSpace(prop.key))
-		fmt.Printf("splitFont %s: %s %d\n", prop.key, prefix, fontIndex)
 		if err != nil {
 			return err
 		}
