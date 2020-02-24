@@ -614,7 +614,7 @@ func findMaxFontIndex(cw *crawl, p *PDFData) (int, error) {
 }
 
 func objIDFromStartObjLine(line string) (int, error) {
-	tokens := strings.Split(line, " ")
+	tokens := strings.Fields(line)
 	if len(tokens) < 3 {
 		return 0, errors.New("bad start obj")
 	}
