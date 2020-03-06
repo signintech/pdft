@@ -5,9 +5,26 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 type crawlResultFonts []crawlResultFont
+
+// Split a font string like '/F1' or '/TT2' into the prefix and index
+func splitFont(s string) (string, int, error) {
+	prefix := ""
+	for i, r := range s {
+		if unicode.IsDigit(r) {
+			val, err := strconv.Atoi(s[i:])
+			if err != nil {
+				return "", 0, err
+			}
+			return prefix, val, nil
+		}
+		prefix += string(r)
+	}
+	return "", 0, fmt.Errorf("No font index")
+}
 
 func (c *crawlResultFonts) parse(propVal *[]byte) error {
 	var props PDFObjPropertiesData
@@ -16,9 +33,11 @@ func (c *crawlResultFonts) parse(propVal *[]byte) error {
 		return err
 	}
 
+
 	for _, prop := range props {
 		var crFont crawlResultFont
-		fontIndex, err := strconv.Atoi(strings.TrimSpace(strings.Replace(prop.key, "F", "", -1)))
+
+		prefix, fontIndex, err := splitFont(strings.TrimSpace(prop.key))
 		if err != nil {
 			return err
 		}
@@ -26,6 +45,7 @@ func (c *crawlResultFonts) parse(propVal *[]byte) error {
 		if err != nil {
 			return err
 		}
+		crFont.prefix = prefix
 		crFont.fontIndex = fontIndex
 		crFont.fontObjID = objID
 		*c = append(*c, crFont)
@@ -36,7 +56,7 @@ func (c *crawlResultFonts) parse(propVal *[]byte) error {
 func (c *crawlResultFonts) String() string {
 	var buff bytes.Buffer
 	for _, f := range *c {
-		buff.WriteString(fmt.Sprintf("/F%d %d 0 R\n", f.fontIndex, f.fontObjID))
+		buff.WriteString(fmt.Sprintf("/%s%d %d 0 R\n", f.prefix, f.fontIndex, f.fontObjID))
 	}
 	return buff.String()
 }
@@ -45,6 +65,7 @@ func (c *crawlResultFonts) append(fontIndex int, fontObjID int) {
 	var crFont crawlResultFont
 	crFont.fontIndex = fontIndex
 	crFont.fontObjID = fontObjID
+	crFont.prefix = "F"
 	*c = append(*c, crFont)
 }
 
@@ -61,4 +82,5 @@ func (c *crawlResultFonts) maxFontIndex() int {
 type crawlResultFont struct {
 	fontIndex int
 	fontObjID int
+	prefix string
 }
