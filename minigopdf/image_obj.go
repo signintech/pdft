@@ -27,6 +27,11 @@ func (i *ImageObj) init(funcGetRoot func() *GoPdf) {
 
 }
 
+//SetSMaskObjID set objId of SMask
+func (i *ImageObj) SetSMaskObjID(objID int) {
+	i.imginfo.smarkObjID = objID
+}
+
 func (i *ImageObj) setProtection(p *PDFProtection) {
 	i.pdfProtection = p
 }
@@ -69,6 +74,14 @@ func (i *ImageObj) isColspaceIndexed() bool {
 
 func (i *ImageObj) haveSMask() bool {
 	return haveSMask(i.imginfo)
+}
+
+//CreateSMask Create SMask
+func (i *ImageObj) CreateSMask() (*SMask, error) {
+	if !i.haveSMask() {
+		return nil, nil
+	}
+	return i.createSMask()
 }
 
 func (i *ImageObj) createSMask() (*SMask, error) {

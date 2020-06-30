@@ -222,10 +222,30 @@ func (i *PDFt) MeasureTextWidth(text string) (float64, error) {
 func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float64, w float64, h float64) error {
 
 	var pdfimg PDFImageData
-	err := pdfimg.setImgBase64(base64str)
+	imgObj, smask, err := createImgObjFromImgBase64(base64str)
 	if err != nil {
 		return err
 	}
+
+	if smask != nil {
+		buff, err := smask.BytesBuffer(0) //ใส่ id ไปมั่วๆทำให้ไม่ support password protect
+		if err != nil {
+			return err
+		}
+		var pdfObj PDFObjData
+		pdfObj.data = buff.Bytes()
+		smaskObjID := i.pdf.putNewObject(pdfObj)
+		imgObj.SetSMaskObjID(smaskObjID)
+	}
+
+	err = pdfimg.setImgObj(imgObj)
+	if err != nil {
+		return err
+	}
+	/*err := pdfimg.setImgBase64(base64str)
+	if err != nil {
+		return err
+	}*/
 	i.pdfImgs = append(i.pdfImgs, &pdfimg)
 	//fmt.Printf("-->%d\n", len(i.pdfImgs))
 
@@ -244,10 +264,27 @@ func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float
 func (i *PDFt) InsertImg(img []byte, pageNum int, x float64, y float64, w float64, h float64) error {
 
 	var pdfimg PDFImageData
-	err := pdfimg.setImg(img)
+	/*err := pdfimg.setImg(img)
+	if err != nil {
+		return err
+	}*/
+	imgObj, smask, err := createImgObjFromBytes(img)
 	if err != nil {
 		return err
 	}
+	if smask != nil {
+		buff, err := smask.BytesBuffer(0) //ใส่ id ไปมั่วๆทำให้ไม่ support password protect
+		if err != nil {
+			return err
+		}
+		var pdfObj PDFObjData
+		pdfObj.data = buff.Bytes()
+		smaskObjID := i.pdf.putNewObject(pdfObj)
+		imgObj.SetSMaskObjID(smaskObjID)
+	}
+
+	pdfimg.setImgObj(imgObj)
+
 	i.pdfImgs = append(i.pdfImgs, &pdfimg)
 	//fmt.Printf("-->%d\n", len(i.pdfImgs))
 
@@ -272,10 +309,26 @@ func (i *PDFt) InsertImgWithCache(img []byte, pageNum int, x float64, y float64,
 		pdfimg = val
 	} else {
 		pdfimg = &PDFImageData{}
-		err := pdfimg.setImg(img)
+		/*err := pdfimg.setImg(img)
+		if err != nil {
+			return err
+		}*/
+		imgObj, smask, err := createImgObjFromBytes(img)
 		if err != nil {
 			return err
 		}
+		if smask != nil {
+			buff, err := smask.BytesBuffer(0) //ใส่ id ไปมั่วๆทำให้ไม่ support password protect
+			if err != nil {
+				return err
+			}
+			var pdfObj PDFObjData
+			pdfObj.data = buff.Bytes()
+			smaskObjID := i.pdf.putNewObject(pdfObj)
+			imgObj.SetSMaskObjID(smaskObjID)
+		}
+		pdfimg.setImgObj(imgObj)
+
 		i.pdfImgs = append(i.pdfImgs, pdfimg)
 		i.pdfImgsMd5Map[md5Str] = pdfimg
 	}

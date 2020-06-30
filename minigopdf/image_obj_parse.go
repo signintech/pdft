@@ -54,7 +54,7 @@ func buildImgProp(imginfo imgInfo) (*bytes.Buffer, error) {
 	}
 
 	if haveSMask(imginfo) {
-		buffer.WriteString(fmt.Sprintf("/SMask %d 0 R\n", imginfo.smarkObjID+1))
+		buffer.WriteString(fmt.Sprintf("/SMask %d 0 R\n", imginfo.smarkObjID))
 	}
 
 	return &buffer, nil

@@ -60,3 +60,12 @@ func (s *SMask) build(objID int) error {
 
 	return nil
 }
+
+//BytesBuffer byte buffer
+func (s *SMask) BytesBuffer(objID int) (*bytes.Buffer, error) {
+	err := s.build(objID)
+	if err != nil {
+		return nil, err
+	}
+	return s.getObjBuff(), nil
+}
