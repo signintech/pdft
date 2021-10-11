@@ -157,6 +157,19 @@ func (i *PDFt) RemovePage(targetPageNumber int) error {
 	return i.setPages(pageObjIds)
 }
 
+// RemoveOtherPages remove all pages, but not targetPageNumber
+func (i *PDFt) RemoveOtherPages(targetPageNumber int) error {
+	pageObjIds, err := i.pdf.getPageObjIDs()
+	if err != nil {
+		return err
+	}
+	if targetPageNumber > 0 && len(pageObjIds) < targetPageNumber {
+		return errors.New("No desired page to keep")
+	}
+
+	return i.setPages([]int{pageObjIds[targetPageNumber]})
+}
+
 func (i *PDFt) setPages(pageObjIds []int) error {
 	props, err := i.pdf.pagesObj.readProperties()
 	if err != nil {
