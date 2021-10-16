@@ -128,3 +128,24 @@ func TestSlice(t *testing.T) {
 	dest = append(dest, []byte("1234567890123456789012345678901")...)
 	fmt.Println(string(src))
 }*/
+
+func TestRemoveOtherPages(t *testing.T) {
+	filename := "pdf_from_docx_with_f.pdf"
+	var ipdf PDFt
+	err := ipdf.Open("test/pdf/" + filename)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = ipdf.RemoveOtherPages(1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	err = ipdf.Save("test/out/RemoveOtherPages_" + filename)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
