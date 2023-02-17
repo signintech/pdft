@@ -379,6 +379,21 @@ func (i *PDFt) AddFont(name string, ttfpath string) error {
 	return nil
 }
 
+func (i *PDFt) AddFontFrom(name string, reader io.Reader) error {
+
+	if _, have := i.fontDatas[name]; have {
+		return ErrAddSameFontName
+	}
+
+	fontData, err := PDFParseFontReader(reader, name)
+	if err != nil {
+		return err
+	}
+
+	i.fontDatas[name] = fontData
+	return nil
+}
+
 //TextriseOverride override text rise
 //Text rise, Trise , specifies the distance, in unscaled text space units,
 //to move the baseline up or down from its default location.
