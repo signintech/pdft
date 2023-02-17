@@ -10,7 +10,7 @@ import (
 	"github.com/signintech/pdft/minigopdf/fontmaker/core"
 )
 
-//EntrySelectors entry selectors
+// EntrySelectors entry selectors
 var EntrySelectors = []int{
 	0, 0, 1, 1, 2, 2,
 	2, 2, 3, 3, 3, 3,
@@ -19,10 +19,10 @@ var EntrySelectors = []int{
 	4, 4, 4, 4, 4, 4, 4,
 }
 
-//ErrNotSupportShortIndexYet not suport none short index yet
+// ErrNotSupportShortIndexYet not suport none short index yet
 var ErrNotSupportShortIndexYet = errors.New("not suport none short index yet")
 
-//PdfDictionaryObj pdf dictionary object
+// PdfDictionaryObj pdf dictionary object
 type PdfDictionaryObj struct {
 	buffer             bytes.Buffer
 	PtrToSubsetFontObj *SubsetFontObj
@@ -85,7 +85,7 @@ func (p *PdfDictionaryObj) getObjBuff() *bytes.Buffer {
 	return &p.buffer
 }
 
-//SetPtrToSubsetFontObj set subsetFontObj pointer
+// SetPtrToSubsetFontObj set subsetFontObj pointer
 func (p *PdfDictionaryObj) SetPtrToSubsetFontObj(ptr *SubsetFontObj) {
 	p.PtrToSubsetFontObj = ptr
 }
@@ -274,8 +274,8 @@ func (p *PdfDictionaryObj) completeGlyphClosure(mapOfglyphs *MapOfCharacterToGly
 	return glyphArray
 }
 
-//AddCompositeGlyphs add composite glyph
-//composite glyph is a Unicode entity that can be defined as a sequence of one or more other characters.
+// AddCompositeGlyphs add composite glyph
+// composite glyph is a Unicode entity that can be defined as a sequence of one or more other characters.
 func (p *PdfDictionaryObj) AddCompositeGlyphs(glyphArray *[]int, glyph int) {
 	start := p.GetOffset(int(glyph))
 	if start == p.GetOffset(int(glyph)+1) {
@@ -334,7 +334,7 @@ const ARG_1_AND_2_ARE_WORDS = 1
 const WE_HAVE_AN_X_AND_Y_SCALE = 64
 const WE_HAVE_A_TWO_BY_TWO = 128
 
-//GetOffset get offset from glyf table
+// GetOffset get offset from glyf table
 func (p *PdfDictionaryObj) GetOffset(glyph int) int {
 	ttfp := p.PtrToSubsetFontObj.GetTTFParser()
 	glyf := ttfp.GetTables()["glyf"]
@@ -342,17 +342,17 @@ func (p *PdfDictionaryObj) GetOffset(glyph int) int {
 	return offset
 }
 
-//Build build buffer
+// Build build buffer
 func (p *PdfDictionaryObj) Build(objID int) error {
 	return p.build(objID)
 }
 
-//GetObjBuff get buffer
+// GetObjBuff get buffer
 func (p *PdfDictionaryObj) GetObjBuff() *bytes.Buffer {
 	return p.getObjBuff()
 }
 
-//CheckSum check sum
+// CheckSum check sum
 func CheckSum(data []byte) uint {
 
 	var byte3, byte2, byte1, byte0 uint64

@@ -14,26 +14,26 @@ import (
 	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
-//ErrAddSameFontName add same font name
+// ErrAddSameFontName add same font name
 var ErrAddSameFontName = errors.New("add same font name")
 
-//ErrFontNameNotFound font name not found
+// ErrFontNameNotFound font name not found
 var ErrFontNameNotFound = errors.New("font name not found")
 
-//Left left
+// Left left
 const Left = gopdf.Left //001000
-//Top top
+// Top top
 const Top = gopdf.Top //000100
-//Right right
+// Right right
 const Right = gopdf.Right //000010
-//Bottom bottom
+// Bottom bottom
 const Bottom = gopdf.Bottom //000001
-//Center center
+// Center center
 const Center = gopdf.Center //010000
-//Middle middle
+// Middle middle
 const Middle = gopdf.Middle //100000
 
-//PDFt inject text to pdf
+// PDFt inject text to pdf
 type PDFt struct {
 	pdf           PDFData
 	fontDatas     map[string]*PDFFontData
@@ -59,7 +59,7 @@ func (i *PDFt) protection() *gopdf.PDFProtection {
 	return i.pdfProtection
 }
 
-//ShowCellBorder  show cell of border
+// ShowCellBorder  show cell of border
 func (i *PDFt) ShowCellBorder(isShow bool) {
 	var clw ContentLineStyle
 	if isShow {
@@ -74,7 +74,7 @@ func (i *PDFt) ShowCellBorder(isShow bool) {
 	i.contenters = append(i.contenters, &clw)
 }
 
-//Open open pdf file
+// Open open pdf file
 func (i *PDFt) Open(filepath string) error {
 	f, err := os.Open(filepath)
 	if err != nil {
@@ -85,7 +85,7 @@ func (i *PDFt) Open(filepath string) error {
 	return i.OpenFrom(f)
 }
 
-//OpenFrom open pdf from io.Reader
+// OpenFrom open pdf from io.Reader
 func (i *PDFt) OpenFrom(r io.Reader) error {
 	//init
 	i.fontDatas = make(map[string]*PDFFontData)
@@ -182,7 +182,7 @@ func (i *PDFt) setPages(pageObjIds []int) error {
 	return nil
 }
 
-//GetNumberOfPage get number of page
+// GetNumberOfPage get number of page
 func (i *PDFt) GetNumberOfPage() int {
 	pageObjIds, err := i.pdf.getPageObjIDs()
 	if err != nil {
@@ -191,7 +191,7 @@ func (i *PDFt) GetNumberOfPage() int {
 	return len(pageObjIds)
 }
 
-//Insert insert text in to pdf
+// Insert insert text in to pdf
 func (i *PDFt) Insert(text string, pageNum int, x float64, y float64, w float64, h float64, align int) error {
 	var ct ContentText
 	ct.text = text
@@ -231,7 +231,7 @@ func (i *PDFt) MeasureTextWidth(text string) (float64, error) {
 	return width, err
 }
 
-//InsertImgBase64 insert img base 64
+// InsertImgBase64 insert img base 64
 func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float64, w float64, h float64) error {
 
 	var pdfimg PDFImageData
@@ -273,7 +273,7 @@ func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float
 	return nil
 }
 
-//InsertImg insert img
+// InsertImg insert img
 func (i *PDFt) InsertImg(img []byte, pageNum int, x float64, y float64, w float64, h float64) error {
 
 	var pdfimg PDFImageData
@@ -314,7 +314,7 @@ func (i *PDFt) InsertImg(img []byte, pageNum int, x float64, y float64, w float6
 	return nil
 }
 
-//InsertImgWithCache insert img with cache
+// InsertImgWithCache insert img with cache
 func (i *PDFt) InsertImgWithCache(img []byte, pageNum int, x float64, y float64, w float64, h float64) error {
 	md5Str := fmt.Sprintf("%x", md5.Sum(img))
 	var pdfimg *PDFImageData
@@ -363,7 +363,7 @@ func (i *PDFt) insertContenters(index int, src Contenter) {
 	i.contenters[index] = src
 }*/
 
-//AddFont add ttf font
+// AddFont add ttf font
 func (i *PDFt) AddFont(name string, ttfpath string) error {
 
 	if _, have := i.fontDatas[name]; have {
@@ -379,12 +379,12 @@ func (i *PDFt) AddFont(name string, ttfpath string) error {
 	return nil
 }
 
-//TextriseOverride override text rise
-//Text rise, Trise , specifies the distance, in unscaled text space units,
-//to move the baseline up or down from its default location.
-//Positive values of text rise move the baseline up.
-//Adjustments to the baseline are useful for drawing superscripts or subscripts.
-//The default location of the baseline can be restored by setting the text rise to 0.
+// TextriseOverride override text rise
+// Text rise, Trise , specifies the distance, in unscaled text space units,
+// to move the baseline up or down from its default location.
+// Positive values of text rise move the baseline up.
+// Adjustments to the baseline are useful for drawing superscripts or subscripts.
+// The default location of the baseline can be restored by setting the text rise to 0.
 func (i *PDFt) TextriseOverride(name string, fn FuncTextriseOverride) error {
 	if _, have := i.fontDatas[name]; !have {
 		return ErrFontNameNotFound
@@ -401,7 +401,7 @@ func (i *PDFt) TextriseOverride(name string, fn FuncTextriseOverride) error {
 	return nil
 }
 
-//KernOverride override kerning
+// KernOverride override kerning
 func (i *PDFt) KernOverride(name string, fn FuncKernOverride) error {
 	if _, have := i.fontDatas[name]; !have {
 		return ErrFontNameNotFound
@@ -418,7 +418,7 @@ func (i *PDFt) KernOverride(name string, fn FuncKernOverride) error {
 	return nil
 }
 
-//SetFont set font
+// SetFont set font
 func (i *PDFt) SetFont(name string, style string, size int) error {
 
 	if _, have := i.fontDatas[name]; !have {
@@ -430,7 +430,7 @@ func (i *PDFt) SetFont(name string, style string, size int) error {
 	return nil
 }
 
-//Save save output pdf
+// Save save output pdf
 func (i *PDFt) Save(filepath string) error {
 	var buff bytes.Buffer
 	err := i.SaveTo(&buff)
@@ -444,7 +444,7 @@ func (i *PDFt) Save(filepath string) error {
 	return nil
 }
 
-//SaveTo save pdf to io.Writer
+// SaveTo save pdf to io.Writer
 func (i *PDFt) SaveTo(w io.Writer) error {
 
 	newpdf, lastID, err := i.build()
@@ -635,7 +635,7 @@ func (i *PDFt) formatXrefline(n int) string {
 	return str
 }
 
-//SetProtection set pdf protection
+// SetProtection set pdf protection
 func (i *PDFt) SetProtection(
 	permissions int,
 	userPass []byte,
@@ -650,13 +650,13 @@ func (i *PDFt) SetProtection(
 	return nil
 }
 
-//Regular - font style regular
+// Regular - font style regular
 const Regular = 0 //000000
-//Italic - font style italic
+// Italic - font style italic
 const Italic = 1 //000001
-//Bold - font style bold
+// Bold - font style bold
 const Bold = 2 //000010
-//Underline - font style underline
+// Underline - font style underline
 const Underline = 4 //000100
 
 func getConvertedStyle(fontStyle string) (style int) {

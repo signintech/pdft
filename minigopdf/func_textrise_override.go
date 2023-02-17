@@ -1,6 +1,6 @@
 package gopdf
 
-//FuncTextriseOverride override text rise
+// FuncTextriseOverride override text rise
 type FuncTextriseOverride func(
 	leftRune rune,
 	rightRune rune,

@@ -1,6 +1,6 @@
 package render
 
-//FieldInfos FieldInfo slice
+// FieldInfos FieldInfo slice
 type FieldInfos []FieldInfo
 
 func (f FieldInfos) toMap() map[string]FieldInfo {
@@ -11,7 +11,7 @@ func (f FieldInfos) toMap() map[string]FieldInfo {
 	return m
 }
 
-//FieldInfo field position
+// FieldInfo field position
 type FieldInfo struct {
 	Key     string
 	PageNum int

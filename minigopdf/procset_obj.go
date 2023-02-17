@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-//ProcSetObj pdf procSet object
+// ProcSetObj pdf procSet object
 type ProcSetObj struct {
 	buffer bytes.Buffer
 	//Font
@@ -74,7 +74,7 @@ func (re *RelateFonts) IsContainsFamilyAndStyle(family string, style int) bool {
 	i := 0
 	max := len(*re)
 	for i < max {
-		if (*re)[i].Family == family && (*re)[i].Style == style  {
+		if (*re)[i].Family == family && (*re)[i].Style == style {
 			return true
 		}
 		i++

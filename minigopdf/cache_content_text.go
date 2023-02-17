@@ -7,10 +7,10 @@ import (
 	"strconv"
 )
 
-//ContentTypeCell cell
+// ContentTypeCell cell
 const ContentTypeCell = 0
 
-//ContentTypeText text
+// ContentTypeText text
 const ContentTypeText = 1
 
 type cacheContentText struct {
@@ -343,12 +343,12 @@ func textrise(f *SubsetFontObj, leftRune rune, rightRune rune, leftIndex uint, r
 	return pairVal
 }
 
-//CacheContent Export cacheContent
+// CacheContent Export cacheContent
 type CacheContent struct {
 	cacheContentText
 }
 
-//Setup setup all infomation for cacheContent
+// Setup setup all infomation for cacheContent
 func (c *CacheContent) Setup(rectangle *Rect,
 	textColor Rgb,
 	grayFill float64,
@@ -381,12 +381,12 @@ func (c *CacheContent) Setup(rectangle *Rect,
 	}
 }
 
-//WriteTextToContent write text to content
+// WriteTextToContent write text to content
 func (c *CacheContent) WriteTextToContent(text string) {
 	c.cacheContentText.text.WriteString(text)
 }
 
-//ToStream create stream of content
+// ToStream create stream of content
 func (c *CacheContent) ToStream(protection *PDFProtection) (*bytes.Buffer, error) {
 	c.cacheContentText.createContent()
 	return c.cacheContentText.toStream(protection)

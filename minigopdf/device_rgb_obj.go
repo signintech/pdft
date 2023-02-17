@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-//DeviceRGBObj  DeviceRGB
+// DeviceRGBObj  DeviceRGB
 type DeviceRGBObj struct {
 	buffer  bytes.Buffer
 	data    []byte
@@ -27,7 +27,7 @@ func (d *DeviceRGBObj) getObjBuff() *bytes.Buffer {
 	return &d.buffer
 }
 
-//สร้าง ข้อมูลใน pdf
+// สร้าง ข้อมูลใน pdf
 func (d *DeviceRGBObj) build(objID int) error {
 
 	d.buffer.WriteString("<<\n")

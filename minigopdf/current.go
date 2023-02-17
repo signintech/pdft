@@ -1,6 +1,6 @@
 package gopdf
 
-//Current current state
+// Current current state
 type Current struct {
 	setXCount int //many times we go func SetX()
 	X         float64
@@ -54,24 +54,24 @@ type ImageCache struct {
 	Rect  *Rect
 }
 
-//Rgb  rgb color
+// Rgb  rgb color
 type Rgb struct {
 	r uint8
 	g uint8
 	b uint8
 }
 
-//SetR set red
+// SetR set red
 func (rgb *Rgb) SetR(r uint8) {
 	rgb.r = r
 }
 
-//SetG set green
+// SetG set green
 func (rgb *Rgb) SetG(g uint8) {
 	rgb.g = g
 }
 
-//SetB set blue
+// SetB set blue
 func (rgb *Rgb) SetB(b uint8) {
 	rgb.b = b
 }

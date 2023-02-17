@@ -8,7 +8,7 @@ import (
 	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
-//PDFObjData byte of obj
+// PDFObjData byte of obj
 type PDFObjData struct {
 	objID int
 	data  []byte
@@ -44,7 +44,7 @@ func (p *PDFObjData) parse(raw *[]byte, stratoffset int) error {
 	return nil
 }
 
-//ReadProperties read all obj Properties
+// ReadProperties read all obj Properties
 func (p *PDFObjData) readProperties() (*PDFObjPropertiesData, error) {
 	var props PDFObjPropertiesData
 	err := readProperties(&p.data, &props)

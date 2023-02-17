@@ -4,28 +4,28 @@ import (
 	"bytes"
 )
 
-//BasicObj : basic object in pdf
+// BasicObj : basic object in pdf
 type BasicObj struct {
 	buffer bytes.Buffer
 	Data   string
 }
 
-//Init : init BasicObj
+// Init : init BasicObj
 func (b *BasicObj) init(funcGetRoot func() *GoPdf) {
 }
 
-//Build : build buff
+// Build : build buff
 func (b *BasicObj) build() error {
 	b.buffer.WriteString(b.Data)
 	return nil
 }
 
-//GetType : type of object
+// GetType : type of object
 func (b *BasicObj) getType() string {
 	return "Basic"
 }
 
-//GetObjBuff : get buffer
+// GetObjBuff : get buffer
 func (b *BasicObj) getObjBuff() *bytes.Buffer {
 	return &(b.buffer)
 }

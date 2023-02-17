@@ -1,6 +1,6 @@
 package pdft
 
-//FuncTextriseOverride override text rise
+// FuncTextriseOverride override text rise
 type FuncTextriseOverride func(
 	leftRune rune,
 	rightRune rune,
@@ -9,7 +9,7 @@ type FuncTextriseOverride func(
 	currTextIndex int,
 ) float32
 
-//FuncKernOverride  return your custome pair value
+// FuncKernOverride  return your custome pair value
 type FuncKernOverride func(
 	leftRune rune,
 	rightRune rune,

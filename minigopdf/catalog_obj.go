@@ -5,7 +5,7 @@ import (
 	//"fmt"
 )
 
-//CatalogObj : catalog dictionary
+// CatalogObj : catalog dictionary
 type CatalogObj struct { //impl IObj
 	buffer bytes.Buffer
 }

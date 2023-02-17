@@ -10,10 +10,10 @@ import (
 	"github.com/signintech/pdft/minigopdf/fontmaker/core"
 )
 
-//ErrCharNotFound char not found
+// ErrCharNotFound char not found
 var ErrCharNotFound = errors.New("char not found")
 
-//SubsetFontObj pdf subsetFont object
+// SubsetFontObj pdf subsetFont object
 type SubsetFontObj struct {
 	buffer                bytes.Buffer
 	ttfp                  core.TTFParser
@@ -53,37 +53,37 @@ func (s *SubsetFontObj) build(objID int) error {
 	return nil
 }
 
-//SetIndexObjCIDFont set IndexObjCIDFont
+// SetIndexObjCIDFont set IndexObjCIDFont
 func (s *SubsetFontObj) SetIndexObjCIDFont(index int) {
 	s.indexObjCIDFont = index
 }
 
-//SetIndexObjUnicodeMap set IndexObjUnicodeMap
+// SetIndexObjUnicodeMap set IndexObjUnicodeMap
 func (s *SubsetFontObj) SetIndexObjUnicodeMap(index int) {
 	s.indexObjUnicodeMap = index
 }
 
-//SetFamily set font family name
+// SetFamily set font family name
 func (s *SubsetFontObj) SetFamily(familyname string) {
 	s.Family = familyname
 }
 
-//GetFamily get font family name
+// GetFamily get font family name
 func (s *SubsetFontObj) GetFamily() string {
 	return s.Family
 }
 
-//SetTtfFontOption set TtfOption must set before SetTTFByPath
+// SetTtfFontOption set TtfOption must set before SetTTFByPath
 func (s *SubsetFontObj) SetTtfFontOption(option TtfOption) {
 	s.ttfFontOption = option
 }
 
-//GetTtfFontOption get TtfOption must set before SetTTFByPath
+// GetTtfFontOption get TtfOption must set before SetTTFByPath
 func (s *SubsetFontObj) GetTtfFontOption() TtfOption {
 	return s.ttfFontOption
 }
 
-//KernValueByLeft find kern value from kern table by left
+// KernValueByLeft find kern value from kern table by left
 func (s *SubsetFontObj) KernValueByLeft(left uint) (bool, *core.KernValue) {
 
 	if !s.ttfFontOption.UseKerning {
@@ -102,7 +102,7 @@ func (s *SubsetFontObj) KernValueByLeft(left uint) (bool, *core.KernValue) {
 	return false, nil
 }
 
-//SetTTFByPath set ttf
+// SetTTFByPath set ttf
 func (s *SubsetFontObj) SetTTFByPath(ttfpath string) error {
 	useKerning := s.ttfFontOption.UseKerning
 	s.ttfp.SetUseKerning(useKerning)
@@ -113,7 +113,7 @@ func (s *SubsetFontObj) SetTTFByPath(ttfpath string) error {
 	return nil
 }
 
-//SetTTFByReader set ttf
+// SetTTFByReader set ttf
 func (s *SubsetFontObj) SetTTFByReader(rd io.Reader) error {
 	useKerning := s.ttfFontOption.UseKerning
 	s.ttfp.SetUseKerning(useKerning)
@@ -124,7 +124,7 @@ func (s *SubsetFontObj) SetTTFByReader(rd io.Reader) error {
 	return nil
 }
 
-//AddChars add char to map CharacterToGlyphIndex
+// AddChars add char to map CharacterToGlyphIndex
 func (s *SubsetFontObj) AddChars(txt string) error {
 	for _, runeValue := range txt {
 		if s.CharacterToGlyphIndex.KeyExists(runeValue) {
@@ -139,7 +139,7 @@ func (s *SubsetFontObj) AddChars(txt string) error {
 	return nil
 }
 
-//CharIndex index of char in glyph table
+// CharIndex index of char in glyph table
 func (s *SubsetFontObj) CharIndex(r rune) (uint, error) {
 	/*
 		if index, ok := s.CharacterToGlyphIndex[r]; ok {
@@ -154,7 +154,7 @@ func (s *SubsetFontObj) CharIndex(r rune) (uint, error) {
 	return 0, ErrCharNotFound
 }
 
-//CharWidth with of char
+// CharWidth with of char
 func (s *SubsetFontObj) CharWidth(r rune) (uint, error) {
 	/*glyphIndex := s.CharacterToGlyphIndex
 	if index, ok := glyphIndex[r]; ok {
@@ -219,7 +219,7 @@ func (s *SubsetFontObj) charCodeToGlyphIndexFormat4(r rune) (uint, error) {
 	return (s.ttfp.GlyphIdArray[int(idx)] + s.ttfp.IdDelta[seg]) & 0xFFFF, nil
 }
 
-//CharCodeToGlyphIndex get glyph index from char code
+// CharCodeToGlyphIndex get glyph index from char code
 func (s *SubsetFontObj) CharCodeToGlyphIndex(r rune) (uint, error) {
 
 	value := uint64(r)
@@ -239,7 +239,7 @@ func (s *SubsetFontObj) CharCodeToGlyphIndex(r rune) (uint, error) {
 
 }
 
-//GlyphIndexToPdfWidth get with from glyphIndex
+// GlyphIndexToPdfWidth get with from glyphIndex
 func (s *SubsetFontObj) GlyphIndexToPdfWidth(glyphIndex uint) uint {
 
 	numberOfHMetrics := s.ttfp.NumberOfHMetrics()
@@ -255,27 +255,27 @@ func (s *SubsetFontObj) GlyphIndexToPdfWidth(glyphIndex uint) uint {
 	return width * 1000 / unitsPerEm
 }
 
-//GetTTFParser get TTFParser
+// GetTTFParser get TTFParser
 func (s *SubsetFontObj) GetTTFParser() *core.TTFParser {
 	return &s.ttfp
 }
 
-//GetUt underlineThickness
+// GetUt underlineThickness
 func (s *SubsetFontObj) GetUt() int {
 	return s.ttfp.UnderlineThickness()
 }
 
-//GetUp underline postion
+// GetUp underline postion
 func (s *SubsetFontObj) GetUp() int {
 	return s.ttfp.UnderlinePosition()
 }
 
-//GetObjBuff get buffer
+// GetObjBuff get buffer
 func (s *SubsetFontObj) GetObjBuff() *bytes.Buffer {
 	return s.getObjBuff()
 }
 
-//Build build buffer
+// Build build buffer
 func (s *SubsetFontObj) Build(objID int) error {
 	return s.build(objID)
 }

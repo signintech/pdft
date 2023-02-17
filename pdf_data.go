@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-//PDFData pdf file data
+// PDFData pdf file data
 type PDFData struct {
 	trailer  TrailerData
 	xrefs    []XrefData
@@ -19,12 +19,12 @@ type PDFData struct {
 	pagesObj *PDFObjData
 }
 
-//TrailerData trailer
+// TrailerData trailer
 type TrailerData struct {
 	rootObjID int
 }
 
-//Len count
+// Len count
 func (p *PDFData) Len() int {
 	return len(p.objIDs)
 }
@@ -52,7 +52,7 @@ func (p *PDFData) removeObjByID(objID int) error {
 	return errors.New("Not Found")
 }
 
-//GetObjByID get obj by objid
+// GetObjByID get obj by objid
 func (p *PDFData) getObjByID(objID int) *PDFObjData {
 	// if pdf exists annotations, it will have multiple same objIDs. So, need find the right one.
 	indexArr := []int{}

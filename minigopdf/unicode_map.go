@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-//UnicodeMap unicode map
+// UnicodeMap unicode map
 type UnicodeMap struct {
 	buffer             bytes.Buffer
 	PtrToSubsetFontObj *SubsetFontObj
@@ -25,7 +25,7 @@ func (u *UnicodeMap) protection() *PDFProtection {
 	return u.pdfProtection
 }
 
-//SetPtrToSubsetFontObj set pointer to SubsetFontObj
+// SetPtrToSubsetFontObj set pointer to SubsetFontObj
 func (u *UnicodeMap) SetPtrToSubsetFontObj(ptr *SubsetFontObj) {
 	u.PtrToSubsetFontObj = ptr
 }
@@ -112,12 +112,12 @@ func (u *UnicodeMap) pdfToUnicodeMap(objID int) (*bytes.Buffer, error) {
 	return &streambuff, nil
 }
 
-//GetObjBuff get buffer
+// GetObjBuff get buffer
 func (u *UnicodeMap) GetObjBuff() *bytes.Buffer {
 	return u.getObjBuff()
 }
 
-//Build build buffer
+// Build build buffer
 func (u *UnicodeMap) Build(objID int) error {
 	return u.build(objID)
 }
