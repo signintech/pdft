@@ -2,6 +2,7 @@ package pdft
 
 import (
 	"bytes"
+	"io"
 
 	gopdf "github.com/signintech/pdft/minigopdf"
 )
@@ -50,6 +51,10 @@ func (p *PDFFontData) fontName() string {
 
 func (p *PDFFontData) setTTFPath(path string) error {
 	return p.font.SetTTFByPath(path)
+}
+
+func (p *PDFFontData) setTTFReader(reader io.Reader) error {
+	return p.font.SetTTFByReader(reader)
 }
 
 func (p *PDFFontData) addChars(text string) error {
