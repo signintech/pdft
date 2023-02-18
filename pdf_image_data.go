@@ -7,7 +7,7 @@ import (
 	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
-//PDFImageData pdf img
+// PDFImageData pdf img
 type PDFImageData struct {
 	objID     int
 	imgObj    gopdf.ImageObj

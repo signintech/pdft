@@ -12,7 +12,7 @@ import (
 	"os"
 )
 
-//ImageObj image object
+// ImageObj image object
 type ImageObj struct {
 	buffer bytes.Buffer
 	//imagepath string
@@ -27,7 +27,7 @@ func (i *ImageObj) init(funcGetRoot func() *GoPdf) {
 
 }
 
-//SetSMaskObjID set objId of SMask
+// SetSMaskObjID set objId of SMask
 func (i *ImageObj) SetSMaskObjID(objID int) {
 	i.imginfo.smarkObjID = objID
 }
@@ -76,7 +76,7 @@ func (i *ImageObj) haveSMask() bool {
 	return haveSMask(i.imginfo)
 }
 
-//CreateSMask Create SMask
+// CreateSMask Create SMask
 func (i *ImageObj) CreateSMask() (*SMask, error) {
 	if !i.haveSMask() {
 		return nil, nil
@@ -111,7 +111,7 @@ func (i *ImageObj) getObjBuff() *bytes.Buffer {
 	return &(i.buffer)
 }
 
-//SetImagePath set image path
+// SetImagePath set image path
 func (i *ImageObj) SetImagePath(path string) error {
 
 	file, err := os.Open(path)
@@ -127,7 +127,7 @@ func (i *ImageObj) SetImagePath(path string) error {
 	return nil
 }
 
-//SetImage set image
+// SetImage set image
 func (i *ImageObj) SetImage(r io.Reader) error {
 
 	data, err := ioutil.ReadAll(r)
@@ -139,7 +139,7 @@ func (i *ImageObj) SetImage(r io.Reader) error {
 	return nil
 }
 
-//GetRect get rect of img
+// GetRect get rect of img
 func (i *ImageObj) GetRect() *Rect {
 
 	rect, err := i.getRect()
@@ -149,7 +149,7 @@ func (i *ImageObj) GetRect() *Rect {
 	return rect
 }
 
-//GetRect get rect of img
+// GetRect get rect of img
 func (i *ImageObj) getRect() (*Rect, error) {
 
 	i.rawImgReader.Seek(0, 0)
@@ -194,17 +194,17 @@ func (i *ImageObj) parse() error {
 	return nil
 }
 
-//GetObjBuff get buffer
+// GetObjBuff get buffer
 func (i *ImageObj) GetObjBuff() *bytes.Buffer {
 	return i.getObjBuff()
 }
 
-//Parse parse img
+// Parse parse img
 func (i *ImageObj) Parse() error {
 	return i.parse()
 }
 
-//Build build buffer
+// Build build buffer
 func (i *ImageObj) Build(objID int) error {
 	return i.build(objID)
 }

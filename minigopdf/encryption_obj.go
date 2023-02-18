@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//EncryptionObj  encryption object res
+// EncryptionObj  encryption object res
 type EncryptionObj struct {
 	buffer bytes.Buffer
 	uValue []byte //U entry in pdf document
@@ -47,12 +47,12 @@ func (e *EncryptionObj) escape(b []byte) string {
 	return s
 }
 
-//GetObjBuff get buffer
+// GetObjBuff get buffer
 func (e *EncryptionObj) GetObjBuff() *bytes.Buffer {
 	return e.getObjBuff()
 }
 
-//Build build buffer
+// Build build buffer
 func (e *EncryptionObj) Build(objID int) error {
 	return e.build(objID)
 }

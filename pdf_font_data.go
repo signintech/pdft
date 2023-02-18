@@ -7,7 +7,7 @@ import (
 	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
-//PDFFontData font data
+// PDFFontData font data
 type PDFFontData struct {
 	fontname  string
 	fontindex int

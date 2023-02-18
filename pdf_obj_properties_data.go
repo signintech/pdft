@@ -1,6 +1,6 @@
 package pdft
 
-//PDFObjPropertiesData array of PDFObjPropertyData
+// PDFObjPropertiesData array of PDFObjPropertyData
 type PDFObjPropertiesData []PDFObjPropertyData
 
 func (p *PDFObjPropertiesData) append(prop PDFObjPropertyData) {

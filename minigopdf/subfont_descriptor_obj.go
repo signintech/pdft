@@ -7,7 +7,7 @@ import (
 	"github.com/signintech/pdft/minigopdf/fontmaker/core"
 )
 
-//SubfontDescriptorObj pdf subfont descriptorObj object
+// SubfontDescriptorObj pdf subfont descriptorObj object
 type SubfontDescriptorObj struct {
 	buffer                bytes.Buffer
 	PtrToSubsetFontObj    *SubsetFontObj
@@ -48,27 +48,27 @@ func (s *SubfontDescriptorObj) build(objID int) error {
 	return nil
 }
 
-//SetIndexObjPdfDictionary set PdfDictionary pointer
+// SetIndexObjPdfDictionary set PdfDictionary pointer
 func (s *SubfontDescriptorObj) SetIndexObjPdfDictionary(index int) {
 	s.indexObjPdfDictionary = index
 }
 
-//SetPtrToSubsetFontObj set SubsetFont pointer
+// SetPtrToSubsetFontObj set SubsetFont pointer
 func (s *SubfontDescriptorObj) SetPtrToSubsetFontObj(ptr *SubsetFontObj) {
 	s.PtrToSubsetFontObj = ptr
 }
 
-//DesignUnitsToPdf convert unit
+// DesignUnitsToPdf convert unit
 func DesignUnitsToPdf(val int, unitsPerEm uint) int {
 	return core.Round(float64(float64(val) * 1000.00 / float64(unitsPerEm)))
 }
 
-//GetObjBuff get buffer
+// GetObjBuff get buffer
 func (s *SubfontDescriptorObj) GetObjBuff() *bytes.Buffer {
 	return s.getObjBuff()
 }
 
-//Build build buffer
+// Build build buffer
 func (s *SubfontDescriptorObj) Build(objID int) error {
 	return s.build(objID)
 }

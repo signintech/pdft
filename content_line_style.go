@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-//ContentLineStyle set line width
+// ContentLineStyle set line width
 type ContentLineStyle struct {
 	width    float64
 	lineType string

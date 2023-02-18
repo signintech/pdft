@@ -2,7 +2,7 @@ package pdft
 
 import "io"
 
-//PDFParseFont  parse font
+// PDFParseFont  parse font
 func PDFParseFont(path string, name string) (*PDFFontData, error) {
 
 	var fontData PDFFontData

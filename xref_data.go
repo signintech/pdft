@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//XrefData nnnnnnnnnn ggggg x eol
+// XrefData nnnnnnnnnn ggggg x eol
 type XrefData struct {
 	N10Digit int    //nnnnnnnnnn
 	G5Digit  int    //ggggg

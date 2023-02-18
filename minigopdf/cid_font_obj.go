@@ -38,7 +38,7 @@ func (ci *CIDFontObj) build(objID int) error {
 	return nil
 }
 
-//SetIndexObjSubfontDescriptor set  indexObjSubfontDescriptor
+// SetIndexObjSubfontDescriptor set  indexObjSubfontDescriptor
 func (ci *CIDFontObj) SetIndexObjSubfontDescriptor(index int) {
 	ci.indexObjSubfontDescriptor = index
 }
@@ -52,17 +52,17 @@ func (ci *CIDFontObj) getObjBuff() *bytes.Buffer {
 	return &ci.buffer
 }
 
-//SetPtrToSubsetFontObj set PtrToSubsetFontObj
+// SetPtrToSubsetFontObj set PtrToSubsetFontObj
 func (ci *CIDFontObj) SetPtrToSubsetFontObj(ptr *SubsetFontObj) {
 	ci.PtrToSubsetFontObj = ptr
 }
 
-//GetObjBuff get buffer
+// GetObjBuff get buffer
 func (ci *CIDFontObj) GetObjBuff() *bytes.Buffer {
 	return ci.getObjBuff()
 }
 
-//Build build buffer
+// Build build buffer
 func (ci *CIDFontObj) Build(objID int) error {
 	return ci.build(objID)
 }

@@ -17,7 +17,7 @@ func (c *crawlResult) String() string {
 	return buff.String()
 }
 
-//ErrCrawlResultValOfNotFound CrawlResult Val Of Not Found
+// ErrCrawlResultValOfNotFound CrawlResult Val Of Not Found
 var ErrCrawlResultValOfNotFound = errors.New("CrawlResult Val Of Not Found")
 
 func (c *crawlResult) valOf(key string) (string, error) {
@@ -102,7 +102,7 @@ type crawlResultItem struct {
 	valStr    string
 }
 
-//ErrWrongTypeOfVal wrong type of val
+// ErrWrongTypeOfVal wrong type of val
 var ErrWrongTypeOfVal = errors.New("wrong type of val")
 
 func (c *crawlResultItem) getValCr() (*crawlResult, error) {
