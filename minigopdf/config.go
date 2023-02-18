@@ -1,6 +1,6 @@
 package gopdf
 
-//Config static config
+// Config static config
 type Config struct {
 	//pt , mm , cm , in
 	Unit       string
@@ -9,7 +9,7 @@ type Config struct {
 	Protection PDFProtectionConfig
 }
 
-//PDFProtectionConfig config of pdf protection
+// PDFProtectionConfig config of pdf protection
 type PDFProtectionConfig struct {
 	UseProtection bool
 	Permissions   int

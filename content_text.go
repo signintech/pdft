@@ -6,7 +6,7 @@ import (
 	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
-//ContentText text in pdf
+// ContentText text in pdf
 type ContentText struct {
 	text          string
 	fontName      string

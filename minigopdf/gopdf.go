@@ -15,7 +15,7 @@ import (
 
 const subsetFont = "SubsetFont"
 
-//GoPdf : A simple library for generating PDF written in Go lang
+// GoPdf : A simple library for generating PDF written in Go lang
 type GoPdf struct {
 
 	//page Margin
@@ -58,18 +58,19 @@ type GoPdf struct {
 	info      *PdfInfo
 }
 
-//SetLineWidth : set line width
+// SetLineWidth : set line width
 func (gp *GoPdf) SetLineWidth(width float64) {
 	gp.curr.lineWidth = width
 	gp.getContent().AppendStreamSetLineWidth(width)
 }
 
-//SetCompressLevel : set compress Level for content streams
+// SetCompressLevel : set compress Level for content streams
 // Possible values for level:
-//    -2 HuffmanOnly, -1 DefaultCompression (which is level 6)
-//     0 No compression,
-//     1 fastest compression, but not very good ratio
-//     9 best compression, but slowest
+//
+//	-2 HuffmanOnly, -1 DefaultCompression (which is level 6)
+//	 0 No compression,
+//	 1 fastest compression, but not very good ratio
+//	 9 best compression, but slowest
 func (gp *GoPdf) SetCompressLevel(level int) {
 	errfmt := "compress level too %s, using %s instead\n"
 	if level < -2 { //-2 = zlib.HuffmanOnly
@@ -84,109 +85,110 @@ func (gp *GoPdf) SetCompressLevel(level int) {
 	gp.compressLevel = level
 }
 
-//SetNoCompression : compressLevel = 0
+// SetNoCompression : compressLevel = 0
 func (gp *GoPdf) SetNoCompression() {
 	gp.compressLevel = zlib.NoCompression
 }
 
-//SetLineType : set line type  ("dashed" ,"dotted")
-//  Usage:
-//  pdf.SetLineType("dashed")
-//  pdf.Line(50, 200, 550, 200)
-//  pdf.SetLineType("dotted")
-//  pdf.Line(50, 400, 550, 400)
+// SetLineType : set line type  ("dashed" ,"dotted")
+//
+//	Usage:
+//	pdf.SetLineType("dashed")
+//	pdf.Line(50, 200, 550, 200)
+//	pdf.SetLineType("dotted")
+//	pdf.Line(50, 400, 550, 400)
 func (gp *GoPdf) SetLineType(linetype string) {
 	gp.getContent().AppendStreamSetLineType(linetype)
 }
 
-//Line : draw line
+// Line : draw line
 func (gp *GoPdf) Line(x1 float64, y1 float64, x2 float64, y2 float64) {
 	gp.getContent().AppendStreamLine(x1, y1, x2, y2)
 }
 
-//RectFromLowerLeft : draw rectangle from lower-left corner (x, y)
+// RectFromLowerLeft : draw rectangle from lower-left corner (x, y)
 func (gp *GoPdf) RectFromLowerLeft(x float64, y float64, wdth float64, hght float64) {
 	gp.getContent().AppendStreamRectangle(x, y, wdth, hght, "")
 }
 
-//RectFromUpperLeft : draw rectangle from upper-left corner (x, y)
+// RectFromUpperLeft : draw rectangle from upper-left corner (x, y)
 func (gp *GoPdf) RectFromUpperLeft(x float64, y float64, wdth float64, hght float64) {
 	gp.getContent().AppendStreamRectangle(x, y+hght, wdth, hght, "")
 }
 
-//RectFromLowerLeftWithStyle : draw rectangle from lower-left corner (x, y)
-// - style: Style of rectangule (draw and/or fill: D, F, DF, FD)
-//		D or empty string: draw. This is the default value.
-//		F: fill
-//		DF or FD: draw and fill
+// RectFromLowerLeftWithStyle : draw rectangle from lower-left corner (x, y)
+//   - style: Style of rectangule (draw and/or fill: D, F, DF, FD)
+//     D or empty string: draw. This is the default value.
+//     F: fill
+//     DF or FD: draw and fill
 func (gp *GoPdf) RectFromLowerLeftWithStyle(x float64, y float64, wdth float64, hght float64, style string) {
 	gp.getContent().AppendStreamRectangle(x, y, wdth, hght, style)
 }
 
-//RectFromUpperLeftWithStyle : draw rectangle from upper-left corner (x, y)
-// - style: Style of rectangule (draw and/or fill: D, F, DF, FD)
-//		D or empty string: draw. This is the default value.
-//		F: fill
-//		DF or FD: draw and fill
+// RectFromUpperLeftWithStyle : draw rectangle from upper-left corner (x, y)
+//   - style: Style of rectangule (draw and/or fill: D, F, DF, FD)
+//     D or empty string: draw. This is the default value.
+//     F: fill
+//     DF or FD: draw and fill
 func (gp *GoPdf) RectFromUpperLeftWithStyle(x float64, y float64, wdth float64, hght float64, style string) {
 	gp.getContent().AppendStreamRectangle(x, y+hght, wdth, hght, style)
 }
 
-//Oval : draw oval
+// Oval : draw oval
 func (gp *GoPdf) Oval(x1 float64, y1 float64, x2 float64, y2 float64) {
 	gp.getContent().AppendStreamOval(x1, y1, x2, y2)
 }
 
-//Br : new line
+// Br : new line
 func (gp *GoPdf) Br(h float64) {
 	gp.curr.Y += h
 	gp.curr.X = gp.leftMargin
 }
 
-//SetGrayFill set the grayscale for the fill, takes a float64 between 0.0 and 1.0
+// SetGrayFill set the grayscale for the fill, takes a float64 between 0.0 and 1.0
 func (gp *GoPdf) SetGrayFill(grayScale float64) {
 	gp.curr.grayFill = grayScale
 	gp.getContent().AppendStreamSetGrayFill(grayScale)
 }
 
-//SetGrayStroke set the grayscale for the stroke, takes a float64 between 0.0 and 1.0
+// SetGrayStroke set the grayscale for the stroke, takes a float64 between 0.0 and 1.0
 func (gp *GoPdf) SetGrayStroke(grayScale float64) {
 	gp.curr.grayStroke = grayScale
 	gp.getContent().AppendStreamSetGrayStroke(grayScale)
 }
 
-//SetLeftMargin : set left margin
+// SetLeftMargin : set left margin
 func (gp *GoPdf) SetLeftMargin(margin float64) {
 	gp.leftMargin = margin
 }
 
-//SetTopMargin : set top margin
+// SetTopMargin : set top margin
 func (gp *GoPdf) SetTopMargin(margin float64) {
 	gp.topMargin = margin
 }
 
-//SetX : set current position X
+// SetX : set current position X
 func (gp *GoPdf) SetX(x float64) {
 	gp.curr.setXCount++
 	gp.curr.X = x
 }
 
-//GetX : get current position X
+// GetX : get current position X
 func (gp *GoPdf) GetX() float64 {
 	return gp.curr.X
 }
 
-//SetY : set current position y
+// SetY : set current position y
 func (gp *GoPdf) SetY(y float64) {
 	gp.curr.Y = y
 }
 
-//GetY : get current position y
+// GetY : get current position y
 func (gp *GoPdf) GetY() float64 {
 	return gp.curr.Y
 }
 
-//ImageByHolder : draw image by ImageHolder
+// ImageByHolder : draw image by ImageHolder
 func (gp *GoPdf) ImageByHolder(img ImageHolder, x float64, y float64, rect *Rect) error {
 
 	cacheImageIndex := -1
@@ -268,7 +270,7 @@ func (gp *GoPdf) ImageByHolder(img ImageHolder, x float64, y float64, rect *Rect
 	return nil
 }
 
-//Image : draw image
+// Image : draw image
 func (gp *GoPdf) Image(picPath string, x float64, y float64, rect *Rect) error {
 	imgh, err := ImageHolderByPath(picPath)
 	if err != nil {
@@ -277,13 +279,13 @@ func (gp *GoPdf) Image(picPath string, x float64, y float64, rect *Rect) error {
 	return gp.ImageByHolder(imgh, x, y, rect)
 }
 
-//AddPage : add new page
+// AddPage : add new page
 func (gp *GoPdf) AddPage() {
 	emptyOpt := PageOption{}
 	gp.AddPageWithOption(emptyOpt)
 }
 
-//AddPageWithOption  : add new page with option
+// AddPageWithOption  : add new page with option
 func (gp *GoPdf) AddPageWithOption(opt PageOption) {
 	page := new(PageObj)
 	page.init(func() *GoPdf {
@@ -309,7 +311,7 @@ func (gp *GoPdf) AddPageWithOption(opt PageOption) {
 	gp.resetCurrXY()
 }
 
-//Start : init gopdf
+// Start : init gopdf
 func (gp *GoPdf) Start(config Config) {
 
 	gp.config = config
@@ -371,13 +373,13 @@ func (gp *GoPdf) SetFontWithStyle(family string, style int, size int) error {
 	return nil
 }
 
-//SetFont : set font style support "" or "U"
+// SetFont : set font style support "" or "U"
 // for "B" and "I" should be loaded apropriate fonts with same styles defined
 func (gp *GoPdf) SetFont(family string, style string, size int) error {
 	return gp.SetFontWithStyle(family, getConvertedStyle(style), size)
 }
 
-//WritePdf : wirte pdf file
+// WritePdf : wirte pdf file
 func (gp *GoPdf) WritePdf(pdfPath string) {
 	ioutil.WriteFile(pdfPath, gp.GetBytesPdf(), 0644)
 }
@@ -424,7 +426,7 @@ func (gp *GoPdf) compilePdf() error {
 	return nil
 }
 
-//GetBytesPdfReturnErr : get bytes of pdf file
+// GetBytesPdfReturnErr : get bytes of pdf file
 func (gp *GoPdf) GetBytesPdfReturnErr() ([]byte, error) {
 	err := gp.Close()
 	if err != nil {
@@ -434,7 +436,7 @@ func (gp *GoPdf) GetBytesPdfReturnErr() ([]byte, error) {
 	return gp.buf.Bytes(), err
 }
 
-//GetBytesPdf : get bytes of pdf file
+// GetBytesPdf : get bytes of pdf file
 func (gp *GoPdf) GetBytesPdf() []byte {
 	b, err := gp.GetBytesPdfReturnErr()
 	if err != nil {
@@ -443,7 +445,7 @@ func (gp *GoPdf) GetBytesPdf() []byte {
 	return b
 }
 
-//Text write text start at current x,y ( current y is the baseline of text )
+// Text write text start at current x,y ( current y is the baseline of text )
 func (gp *GoPdf) Text(text string) error {
 
 	err := gp.curr.Font_ISubset.AddChars(text)
@@ -459,7 +461,7 @@ func (gp *GoPdf) Text(text string) error {
 	return nil
 }
 
-//CellWithOption create cell of text ( use current x,y is upper-left corner of cell)
+// CellWithOption create cell of text ( use current x,y is upper-left corner of cell)
 func (gp *GoPdf) CellWithOption(rectangle *Rect, text string, opt CellOption) error {
 	err := gp.curr.Font_ISubset.AddChars(text)
 	if err != nil {
@@ -472,8 +474,8 @@ func (gp *GoPdf) CellWithOption(rectangle *Rect, text string, opt CellOption) er
 	return nil
 }
 
-//Cell : create cell of text ( use current x,y is upper-left corner of cell)
-//Note that this has no effect on Rect.H pdf (now). Fix later :-)
+// Cell : create cell of text ( use current x,y is upper-left corner of cell)
+// Note that this has no effect on Rect.H pdf (now). Fix later :-)
 func (gp *GoPdf) Cell(rectangle *Rect, text string) error {
 
 	defaultopt := CellOption{
@@ -494,12 +496,12 @@ func (gp *GoPdf) Cell(rectangle *Rect, text string) error {
 	return nil
 }
 
-//AddTTFFontByReader add font file
+// AddTTFFontByReader add font file
 func (gp *GoPdf) AddTTFFontByReader(family string, rd io.Reader) error {
 	return gp.AddTTFFontByReaderWithOption(family, rd, defaultTtfFontOption())
 }
 
-//AddTTFFontByReaderWithOption add font file
+// AddTTFFontByReaderWithOption add font file
 func (gp *GoPdf) AddTTFFontByReaderWithOption(family string, rd io.Reader, option TtfOption) error {
 	subsetFont := new(SubsetFontObj)
 	subsetFont.init(func() *GoPdf {
@@ -551,7 +553,7 @@ func (gp *GoPdf) AddTTFFontByReaderWithOption(family string, rd io.Reader, optio
 	if gp.indexOfProcSet != -1 {
 		procset := gp.pdfObjs[gp.indexOfProcSet].(*ProcSetObj)
 		if !procset.Realtes.IsContainsFamilyAndStyle(family, option.Style&^Underline) {
-			procset.Realtes = append(procset.Realtes, RelateFont{Family: family, IndexOfObj: index, CountOfFont: gp.curr.CountOfFont, Style: option.Style&^Underline})
+			procset.Realtes = append(procset.Realtes, RelateFont{Family: family, IndexOfObj: index, CountOfFont: gp.curr.CountOfFont, Style: option.Style &^ Underline})
 			subsetFont.CountOfFont = gp.curr.CountOfFont
 			gp.curr.CountOfFont++
 		}
@@ -559,7 +561,7 @@ func (gp *GoPdf) AddTTFFontByReaderWithOption(family string, rd io.Reader, optio
 	return nil
 }
 
-//AddTTFFontWithOption : add font file
+// AddTTFFontWithOption : add font file
 func (gp *GoPdf) AddTTFFontWithOption(family string, ttfpath string, option TtfOption) error {
 
 	if _, err := os.Stat(ttfpath); os.IsNotExist(err) {
@@ -573,12 +575,12 @@ func (gp *GoPdf) AddTTFFontWithOption(family string, ttfpath string, option TtfO
 	return gp.AddTTFFontByReaderWithOption(family, rd, option)
 }
 
-//AddTTFFont : add font file
+// AddTTFFont : add font file
 func (gp *GoPdf) AddTTFFont(family string, ttfpath string) error {
 	return gp.AddTTFFontWithOption(family, ttfpath, defaultTtfFontOption())
 }
 
-//KernOverride override kern value
+// KernOverride override kern value
 func (gp *GoPdf) KernOverride(family string, fn FuncKernOverride) error {
 	i := 0
 	max := len(gp.pdfObjs)
@@ -598,7 +600,7 @@ func (gp *GoPdf) KernOverride(family string, fn FuncKernOverride) error {
 	return errors.New("font family not found")
 }
 
-//SetTextColor :  function sets the text color
+// SetTextColor :  function sets the text color
 func (gp *GoPdf) SetTextColor(r uint8, g uint8, b uint8) {
 	rgb := Rgb{
 		r: r,
@@ -608,17 +610,17 @@ func (gp *GoPdf) SetTextColor(r uint8, g uint8, b uint8) {
 	gp.curr.setTextColor(rgb)
 }
 
-//SetStrokeColor set the color for the stroke
+// SetStrokeColor set the color for the stroke
 func (gp *GoPdf) SetStrokeColor(r uint8, g uint8, b uint8) {
 	gp.getContent().AppendStreamSetColorStroke(r, g, b)
 }
 
-//SetFillColor set the color for the stroke
+// SetFillColor set the color for the stroke
 func (gp *GoPdf) SetFillColor(r uint8, g uint8, b uint8) {
 	gp.getContent().AppendStreamSetColorFill(r, g, b)
 }
 
-//MeasureTextWidth : measure Width of text (use current font)
+// MeasureTextWidth : measure Width of text (use current font)
 func (gp *GoPdf) MeasureTextWidth(text string) (float64, error) {
 
 	err := gp.curr.Font_ISubset.AddChars(text) //AddChars for create CharacterToGlyphIndex
@@ -633,7 +635,7 @@ func (gp *GoPdf) MeasureTextWidth(text string) (float64, error) {
 	return textWidthPdfUnit, nil
 }
 
-//Curve Draws a Bézier curve (the Bézier curve is tangent to the line between the control points at either end of the curve)
+// Curve Draws a Bézier curve (the Bézier curve is tangent to the line between the control points at either end of the curve)
 // Parameters:
 // - x0, y0: Start point
 // - x1, y1: Control point 1
@@ -651,7 +653,7 @@ func (gp *GoPdf) SetProtection(permissions int, userPass []byte, ownerPass []byt
 	gp.pdfProtection.setProtection(permissions, userPass, ownerPass)
 }*/
 
-//SetInfo set Document Information Dictionary
+// SetInfo set Document Information Dictionary
 func (gp *GoPdf) SetInfo(info PdfInfo) {
 	gp.info = &info
 	gp.isUseInfo = true
@@ -659,7 +661,7 @@ func (gp *GoPdf) SetInfo(info PdfInfo) {
 
 /*---private---*/
 
-//init
+// init
 func (gp *GoPdf) init() {
 
 	//default
@@ -822,7 +824,7 @@ func (gp *GoPdf) bindInfo(buff *bytes.Buffer) {
 	buff.WriteString(" >>\n")
 }
 
-//ปรับ xref ให้เป็น 10 หลัก
+// ปรับ xref ให้เป็น 10 หลัก
 func (gp *GoPdf) formatXrefline(n int) string {
 	str := strconv.Itoa(n)
 	for len(str) < 10 {

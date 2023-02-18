@@ -14,7 +14,7 @@ const object = "object"
 const array = "array"
 const number = "number"
 
-//PDFObjPropertyData property of pdf obj
+// PDFObjPropertyData property of pdf obj
 type PDFObjPropertyData struct {
 	key    string
 	rawVal string
@@ -199,7 +199,7 @@ func readObjIDFromDictionaryArr(str string) ([]int, []int, error) {
 	return objIDs, revisions, nil
 }
 
-//ErrorObjectIDNotFound Object ID not found
+// ErrorObjectIDNotFound Object ID not found
 var ErrorObjectIDNotFound = errors.New("Object ID not found")
 
 func readObjIDFromDictionary(str string) (int, int, error) {

@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 )
 
-//PDFParse parse pdf
+// PDFParse parse pdf
 func PDFParse(file io.Reader, outPdf *PDFData) error {
 
 	raw, err := ioutil.ReadAll(file)

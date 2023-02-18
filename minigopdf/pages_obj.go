@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-//PagesObj pdf pages object
+// PagesObj pdf pages object
 type PagesObj struct { //impl IObj
 	buffer    bytes.Buffer
 	PageCount int

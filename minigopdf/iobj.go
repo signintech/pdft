@@ -4,7 +4,7 @@ import (
 	"bytes"
 )
 
-//IObj inteface for all pdf object
+// IObj inteface for all pdf object
 type IObj interface {
 	init(func() *GoPdf)
 	getType() string

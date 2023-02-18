@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-//SMask smask
+// SMask smask
 type SMask struct {
 	buffer bytes.Buffer
 	imgInfo
@@ -61,7 +61,7 @@ func (s *SMask) build(objID int) error {
 	return nil
 }
 
-//BytesBuffer byte buffer
+// BytesBuffer byte buffer
 func (s *SMask) BytesBuffer(objID int) (*bytes.Buffer, error) {
 	err := s.build(objID)
 	if err != nil {
