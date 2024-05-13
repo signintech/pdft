@@ -1,4 +1,4 @@
-module github.com/signintech/pdft
+module github.com/kelvinsantos/pdft
 
 go 1.12
 

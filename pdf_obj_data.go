@@ -5,7 +5,7 @@ import (
 	"crypto/rc4"
 	"errors"
 
-	gopdf "github.com/signintech/pdft/minigopdf"
+	gopdf "github.com/kelvinsantos/pdft/minigopdf"
 )
 
 // PDFObjData byte of obj
