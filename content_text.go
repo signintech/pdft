@@ -39,9 +39,9 @@ func (c *ContentText) toSteram() (*bytes.Buffer, error) {
 	}
 
 	var rgb gopdf.Rgb
-	rgb.SetR(1)
-	rgb.SetG(1)
-	rgb.SetB(1)
+	rgb.SetR(50)
+	rgb.SetG(100)
+	rgb.SetB(150)
 
 	var cc gopdf.CacheContent
 	cc.Setup(
