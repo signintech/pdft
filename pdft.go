@@ -192,9 +192,10 @@ func (i *PDFt) GetNumberOfPage() int {
 }
 
 // Insert insert text in to pdf
-func (i *PDFt) Insert(text string, pageNum int, x float64, y float64, w float64, h float64, align int) error {
+func (i *PDFt) Insert(text string, pageNum int, x float64, y float64, w float64, h float64, align int, fontColor *FontColor) error {
 	var ct ContentText
 	ct.text = text
+	ct.fontColor = fontColor
 	ct.fontName = i.curr.fontName
 	ct.fontStyle = i.curr.fontStyle
 	ct.fontSize = i.curr.fontSize

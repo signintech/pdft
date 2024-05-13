@@ -43,7 +43,7 @@ func pdf(t *testing.T, filename string) {
 		return
 	}
 
-	err = ipdf.Insert("ที่ กั้น", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom)
+	err = ipdf.Insert("ที่ กั้น", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom, nil)
 	if err != nil {
 		t.Error(err)
 		return

@@ -28,7 +28,7 @@ if err != nil {
 }
 
 //insert text to pdf
-err = pt.Insert("Hi", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom)
+err = pt.Insert("Hi", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom, nil)
 if err != nil {
     panic(err) 
 }
