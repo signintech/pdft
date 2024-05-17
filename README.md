@@ -33,6 +33,12 @@ if err != nil {
     panic(err) 
 }
 
+// insert text to pdf with color
+err = pt.Insert("Hi", 1, 10, 10, 100, 100, gopdf.Center|gopdf.Bottom, &FontColor{R: 255, G: 255, B: 255})
+if err != nil {
+    panic(err) 
+}
+
 // measure text width
 var textWidth float64
 textWidth, err = pt.MeasureTextWidth("Hi")
