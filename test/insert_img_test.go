@@ -140,14 +140,14 @@ func writePdf(t *testing.T, source string, target string) {
 
 	//insert text
 	ipdf.SetFont("angsa", "", 14)
-	err = ipdf.Insert("น้ำอยู่บนฟ้าเป็นละอองเป็นไอฉันจะบินไปหาบนนภาทันใดแล้วโปรยเกลือผงหรือโซเดียมคลอไรด์มันจะดูดความชื้นเป็นหยดน้ำเป็นก้อนเมฆ", 1, 10.0, 10.0, 100, 100, pdft.Left|pdft.Top)
+	err = ipdf.Insert("น้ำอยู่บนฟ้าเป็นละอองเป็นไอฉันจะบินไปหาบนนภาทันใดแล้วโปรยเกลือผงหรือโซเดียมคลอไรด์มันจะดูดความชื้นเป็นหยดน้ำเป็นก้อนเมฆ", 1, 10.0, 10.0, 100, 100, pdft.Left|pdft.Top, nil)
 	if err != nil {
 		t.Errorf("Couldn't insert text %+v", err)
 		return
 	}
 
 	ipdf.SetFont("angsa", "", 14)
-	err = ipdf.Insert("นาคีมีพิษเพี้ยง สุริโย เลื้อยบ่ทำเดโช แช่มช้า พิษน้อยหยิ่งโยโส แมงป่อง ชูแต่หางเองอ้า อวดอ้าง ฤทธี", 1, 10.0, 40.0, 100, 100, pdft.Left|pdft.Top)
+	err = ipdf.Insert("นาคีมีพิษเพี้ยง สุริโย เลื้อยบ่ทำเดโช แช่มช้า พิษน้อยหยิ่งโยโส แมงป่อง ชูแต่หางเองอ้า อวดอ้าง ฤทธี", 1, 10.0, 40.0, 100, 100, pdft.Left|pdft.Top, nil)
 	if err != nil {
 		t.Errorf("Couldn't insert text %+v", err)
 		return

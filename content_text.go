@@ -6,9 +6,16 @@ import (
 	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
+type FontColor struct {
+	R int
+	G int
+	B int
+}
+
 // ContentText text in pdf
 type ContentText struct {
 	text          string
+	fontColor     *FontColor
 	fontName      string
 	fontStyle     int
 	fontSize      int
@@ -39,9 +46,15 @@ func (c *ContentText) toSteram() (*bytes.Buffer, error) {
 	}
 
 	var rgb gopdf.Rgb
-	rgb.SetR(1)
-	rgb.SetG(1)
-	rgb.SetB(1)
+	if c.fontColor != nil {
+		rgb.SetR(uint8(c.fontColor.R))
+		rgb.SetG(uint8(c.fontColor.G))
+		rgb.SetB(uint8(c.fontColor.B))
+	} else {
+		rgb.SetR(1)
+		rgb.SetG(1)
+		rgb.SetB(1)
+	}
 
 	var cc gopdf.CacheContent
 	cc.Setup(

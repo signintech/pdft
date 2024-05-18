@@ -36,7 +36,7 @@ func (r *Render) Text(key string, text string) error {
 			return err
 		}
 
-		err = r.Insert(text, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align)
+		err = r.Insert(text, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align, nil)
 		if err != nil {
 			return err
 		}
@@ -66,6 +66,6 @@ func (r *Render) ShowDesignView() {
 	r.ShowCellBorder(true)
 	for key, finfo := range r.finfoMap {
 		r.SetFont(finfo.Font, "", finfo.Size)
-		r.Insert("#"+key, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align)
+		r.Insert("#"+key, finfo.PageNum, finfo.X, finfo.Y, finfo.W, finfo.H, finfo.Align, nil)
 	}
 }
