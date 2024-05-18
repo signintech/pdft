@@ -32,7 +32,7 @@ func TestInsertImage(t *testing.T) {
 	}
 	//ipdf.InsertImg(rawData, 1, 100.0, 100.0, 100, 100)
 	ipdf.InsertImgBase64(imgBase64, 1, 100.0, 100.0, 100, 100)
-	err = ipdf.Save("/Users/oneplus/Desktop/pdf/out3_" + filename)
+	err = ipdf.Save("test/out/out3_" + filename)
 	if err != nil {
 		t.Errorf("Couldn't save pdf. %+v", err)
 		return

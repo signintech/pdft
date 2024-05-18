@@ -3,7 +3,7 @@ package pdft
 import (
 	"testing"
 
-	gopdf "github.com/kelvinsantos/pdft/minigopdf"
+	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
 func TestPDF(t *testing.T) {

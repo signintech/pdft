@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 
-	gopdf "github.com/kelvinsantos/pdft/minigopdf"
+	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
 // PDFImageData pdf img

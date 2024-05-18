@@ -3,7 +3,7 @@ package render
 import (
 	"testing"
 
-	"github.com/kelvinsantos/pdft"
+	"github.com/signintech/pdft"
 )
 
 func TestRender(t *testing.T) {

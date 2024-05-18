@@ -9,7 +9,7 @@ import (
 
 	_ "image/png"
 
-	"github.com/kelvinsantos/pdft"
+	"github.com/signintech/pdft"
 )
 
 func TestInsertToDocx(t *testing.T) {

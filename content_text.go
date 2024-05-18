@@ -3,7 +3,7 @@ package pdft
 import (
 	"bytes"
 
-	gopdf "github.com/kelvinsantos/pdft/minigopdf"
+	gopdf "github.com/signintech/pdft/minigopdf"
 )
 
 type FontColor struct {
