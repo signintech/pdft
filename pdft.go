@@ -26,6 +26,12 @@ var ErrNoDesiredPageToKeep = errors.New("no desired page to keep")
 // No desired page to remove
 var ErrNoDesiredPageToRemove = errors.New("no desired page to remove")
 
+// No desired page to copy
+var ErrNoDesiredPageToCopy = errors.New("no desired page to copy")
+
+// No Contents property in this object
+var ErrNoContentsProperty = errors.New("no Contents property in this object")
+
 // Left left
 const Left = gopdf.Left //001000
 // Top top
@@ -110,12 +116,13 @@ func (i *PDFt) OpenFrom(r io.Reader) error {
 
 // DuplicatePageAfter ...
 func (i *PDFt) DuplicatePageAfter(targetPageNumber, position int) error {
+
 	pageObjIds, err := i.pdf.getPageObjIDs()
 	if err != nil {
 		return err
 	}
 	if targetPageNumber > 0 && len(pageObjIds) < targetPageNumber {
-		return errors.New("No desired page to copy")
+		return ErrNoDesiredPageToCopy
 	}
 
 	pageObj := *(i.pdf.getObjByID(pageObjIds[targetPageNumber-1])) //copy object value
@@ -126,7 +133,7 @@ func (i *PDFt) DuplicatePageAfter(targetPageNumber, position int) error {
 	}
 	pageContent := props.getPropByKey("Contents")
 	if pageContent == nil {
-		return errors.New("No Contents property in this object")
+		return ErrNoContentsProperty
 	}
 	contentID, _, err := pageContent.asDictionary()
 	if err != nil {

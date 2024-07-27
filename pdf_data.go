@@ -164,9 +164,9 @@ func (p *PDFData) injectImgsToPDF(pdfImgs []*PDFImageData) error {
 	rootOfXObjectID := -1
 	resourcesContent := ""
 	cwRes, _ := p.getPageCrawl(p.trailer.rootObjID, "Kids", "Resources")
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 	foundRes := false
 	for resID, r := range cwRes.results {
 		resources, err := r.valOf("Resources")
