@@ -226,6 +226,8 @@ func (i *PDFt) InsertWrapText(text string,
 
 	prevText := ""
 	currText := ""
+	fontSize := float64(i.curr.fontSize)
+	newLine := fontSize * 0.2
 	for _, token := range tokens {
 		if token == "" {
 			continue
@@ -240,7 +242,7 @@ func (i *PDFt) InsertWrapText(text string,
 			if err != nil {
 				return err
 			}
-			currentY += 10.0
+			currentY += fontSize + newLine
 			currText = ""
 			prevText = ""
 		}
