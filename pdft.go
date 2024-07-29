@@ -6,12 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
 
 	gopdf "github.com/signintech/pdft/minigopdf"
+	"github.com/signintech/pdft/textbreak"
 )
 
 // ErrAddSameFontName add same font name
@@ -19,6 +19,18 @@ var ErrAddSameFontName = errors.New("add same font name")
 
 // ErrFontNameNotFound font name not found
 var ErrFontNameNotFound = errors.New("font name not found")
+
+// error No desired page to keep
+var ErrNoDesiredPageToKeep = errors.New("no desired page to keep")
+
+// No desired page to remove
+var ErrNoDesiredPageToRemove = errors.New("no desired page to remove")
+
+// No desired page to copy
+var ErrNoDesiredPageToCopy = errors.New("no desired page to copy")
+
+// No Contents property in this object
+var ErrNoContentsProperty = errors.New("no Contents property in this object")
 
 // Left left
 const Left = gopdf.Left //001000
@@ -104,12 +116,13 @@ func (i *PDFt) OpenFrom(r io.Reader) error {
 
 // DuplicatePageAfter ...
 func (i *PDFt) DuplicatePageAfter(targetPageNumber, position int) error {
+
 	pageObjIds, err := i.pdf.getPageObjIDs()
 	if err != nil {
 		return err
 	}
 	if targetPageNumber > 0 && len(pageObjIds) < targetPageNumber {
-		return errors.New("No desired page to copy")
+		return ErrNoDesiredPageToCopy
 	}
 
 	pageObj := *(i.pdf.getObjByID(pageObjIds[targetPageNumber-1])) //copy object value
@@ -120,7 +133,7 @@ func (i *PDFt) DuplicatePageAfter(targetPageNumber, position int) error {
 	}
 	pageContent := props.getPropByKey("Contents")
 	if pageContent == nil {
-		return errors.New("No Contents property in this object")
+		return ErrNoContentsProperty
 	}
 	contentID, _, err := pageContent.asDictionary()
 	if err != nil {
@@ -149,7 +162,7 @@ func (i *PDFt) RemovePage(targetPageNumber int) error {
 		return err
 	}
 	if targetPageNumber > 0 && len(pageObjIds) < targetPageNumber {
-		return errors.New("No desired page to remove")
+		return ErrNoDesiredPageToRemove
 	}
 	copy(pageObjIds[targetPageNumber-1:], pageObjIds[targetPageNumber:])
 	pageObjIds = pageObjIds[:len(pageObjIds)-1]
@@ -164,7 +177,7 @@ func (i *PDFt) RemoveOtherPages(targetPageNumber int) error {
 		return err
 	}
 	if targetPageNumber > 0 && len(pageObjIds) < targetPageNumber {
-		return errors.New("No desired page to keep")
+		return ErrNoDesiredPageToKeep
 	}
 
 	return i.setPages([]int{pageObjIds[targetPageNumber]})
@@ -189,6 +202,59 @@ func (i *PDFt) GetNumberOfPage() int {
 		return 0
 	}
 	return len(pageObjIds)
+}
+
+// Insert insert text in to pdf
+func (i *PDFt) InsertWrapText(text string,
+	pageNum int, x float64, y float64,
+	w float64, h float64, align int,
+	fontColor *FontColor,
+	textBreaker textbreak.TextBreaker,
+) error {
+
+	//textbreaker is null then use without textbreaker
+	if textBreaker == nil {
+		return i.Insert(text, pageNum, x, y, w, h, align, fontColor)
+	}
+
+	//break text
+	currentY := y
+	tokens, err := textBreaker.BreakTextToToken(text)
+	if err != nil {
+		return fmt.Errorf("BreakTextToToken %s : %w", text, err)
+	}
+
+	prevText := ""
+	currText := ""
+	fontSize := float64(i.curr.fontSize)
+	newLine := fontSize * 0.2
+	for _, token := range tokens {
+		if token == "" {
+			continue
+		}
+		currText += token
+		width, err := i.MeasureTextWidth(currText)
+		if err != nil {
+			return err
+		}
+		if width > w {
+			err = i.Insert(strings.TrimSpace(prevText), pageNum, x, currentY, w, h, align, fontColor)
+			if err != nil {
+				return err
+			}
+			currentY += fontSize + newLine
+			currText = ""
+			prevText = ""
+		}
+		prevText = currText
+	}
+	if currText != "" {
+		err = i.Insert(strings.TrimSpace(currText), pageNum, x, currentY, w, h, align, fontColor)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Insert insert text in to pdf
@@ -453,7 +519,7 @@ func (i *PDFt) Save(filepath string) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(filepath, buff.Bytes(), 0644)
+	err = os.WriteFile(filepath, buff.Bytes(), 0644)
 	if err != nil {
 		return err
 	}

@@ -10,6 +10,8 @@ import (
 
 type crawlResultFonts []crawlResultFont
 
+var ErrNoFontIndex = fmt.Errorf("no font index")
+
 // Split a font string like '/F1' or '/TT2' into the prefix and index
 func splitFont(s string) (string, int, error) {
 	prefix := ""
@@ -24,7 +26,7 @@ func splitFont(s string) (string, int, error) {
 		}
 		prefix += string(r)
 	}
-	return "", 0, fmt.Errorf("No font index")
+	return "", 0, ErrNoFontIndex
 }
 
 func (c *crawlResultFonts) parse(propVal *[]byte) error {
