@@ -184,14 +184,23 @@ func (i *PDFt) RemoveOtherPages(targetPageNumber int) error {
 }
 
 func (i *PDFt) setPages(pageObjIds []int) error {
-	props, err := i.pdf.pagesObj.readProperties()
+	rootProps, err := i.pdf.getObjByID(i.pdf.trailer.rootObjID).readProperties()
+	if err != nil {
+		return err
+	}
+	rootPagesID, _, err := rootProps.getPropByKey("Pages").asDictionary()
+	if err != nil {
+		return err
+	}
+	pagesObj := i.pdf.getObjByID(rootPagesID)
+	props, err := pagesObj.readProperties()
 	if err != nil {
 		return err
 	}
 	nPage := len(pageObjIds)
 	props.getPropByKey("Count").rawVal = strconv.Itoa(nPage)
 	props.getPropByKey("Kids").setAsDictionaryArr(pageObjIds, nil)
-	i.pdf.pagesObj.setProperties(props)
+	pagesObj.setProperties(props)
 	return nil
 }
 
