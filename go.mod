@@ -1,3 +1,3 @@
-module github.com/yyqqing/pdft
+module github.com/signintech/pdft
 
 go 1.13
