@@ -233,6 +233,8 @@ func (i *PDFt) InsertWrapText(text string,
 		return fmt.Errorf("BreakTextToToken %s : %w", text, err)
 	}
 
+	var renderCaches []cacheWrapTextRender
+
 	prevText := ""
 	currText := ""
 	fontSize := float64(i.curr.fontSize)
@@ -247,17 +249,43 @@ func (i *PDFt) InsertWrapText(text string,
 			return err
 		}
 		if width > w {
-			err = i.Insert(strings.TrimSpace(prevText), pageNum, x, currentY, w, h, align, fontColor)
-			if err != nil {
-				return err
-			}
+			renderCaches = append(renderCaches, cacheWrapTextRender{
+				text:      strings.TrimSpace(prevText),
+				pageNum:   pageNum,
+				x:         x,
+				y:         currentY,
+				w:         w,
+				h:         h,
+				align:     align,
+				fontColor: fontColor,
+			})
 			currentY += fontSize + newLine
 			currText = token
 		}
 		prevText = currText
 	}
 	if currText != "" {
-		err = i.Insert(strings.TrimSpace(currText), pageNum, x, currentY, w, h, align, fontColor)
+		renderCaches = append(renderCaches, cacheWrapTextRender{
+			text:      strings.TrimSpace(prevText),
+			pageNum:   pageNum,
+			x:         x,
+			y:         currentY,
+			w:         w,
+			h:         h,
+			align:     align,
+			fontColor: fontColor,
+		})
+		currentY += fontSize + newLine
+	}
+
+	yoffset := 0.0
+
+	if gopdf.Middle&align == gopdf.Middle {
+		yoffset = (currentY-y)/2.0 - fontSize/2.0
+	}
+
+	for _, cache := range renderCaches {
+		err := i.Insert(cache.text, cache.pageNum, cache.x, cache.y-yoffset, cache.w, cache.h, cache.align, cache.fontColor)
 		if err != nil {
 			return err
 		}
@@ -761,4 +789,15 @@ func getConvertedStyle(fontStyle string) (style int) {
 		style = style | Underline
 	}
 	return
+}
+
+type cacheWrapTextRender struct {
+	text      string
+	pageNum   int
+	x         float64
+	y         float64
+	w         float64
+	h         float64
+	align     int
+	fontColor *FontColor
 }
