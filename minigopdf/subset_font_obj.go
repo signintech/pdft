@@ -33,6 +33,11 @@ func (s *SubsetFontObj) SetFuncTextriseOverride(funcTextriseOverride FuncTextris
 
 func (s *SubsetFontObj) SetFuncKernOverride(funcKernOverride FuncKernOverride) {
 	s.funcKernOverride = funcKernOverride
+	if s.funcKernOverride != nil {
+		s.ttfFontOption.UseKerning = true
+	} else {
+		s.ttfFontOption.UseKerning = false
+	}
 }
 
 func (s *SubsetFontObj) init(funcGetRoot func() *GoPdf) {

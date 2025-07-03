@@ -252,8 +252,7 @@ func (i *PDFt) InsertWrapText(text string,
 				return err
 			}
 			currentY += fontSize + newLine
-			currText = ""
-			prevText = ""
+			currText = token
 		}
 		prevText = currText
 	}
