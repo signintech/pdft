@@ -2,8 +2,11 @@ package pdft
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"strconv"
+	"strings"
 )
 
 // PDFParse parse pdf
@@ -34,7 +37,59 @@ func PDFParse(file io.Reader, outPdf *PDFData) error {
 		return err
 	}
 
+	err = parsePageSize(outPdf)
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func parsePageSize(pdf *PDFData) error {
+	pdf.pageSizes = make(map[int][]float64)
+	pageIDs, err := pdf.getPageObjIDs()
+	if err != nil {
+		return err
+	}
+
+	for n, pageID := range pageIDs {
+		data := pdf.getObjByID(pageID).data
+		propContentsObj, err := readProperty(&data, "MediaBox")
+		if err != nil {
+			return err
+		}
+		valType := propContentsObj.valType()
+		if valType != array {
+			fmt.Printf("MediaBox type is not array, but %s", valType)
+			continue
+		}
+		parseMediaBoxd, err := parseFloatSlice(propContentsObj.rawVal)
+		if err != nil {
+			return err
+		}
+		pdf.pageSizes[n] = parseMediaBoxd
+	}
+	return nil
+}
+
+func parseFloatSlice(s string) ([]float64, error) {
+	// ตัด [] ออก
+	s = strings.TrimSpace(s)
+	s = strings.TrimPrefix(s, "[")
+	s = strings.TrimSuffix(s, "]")
+
+	// แยกด้วยช่องว่าง (จัดการ space เกินด้วย Fields)
+	parts := strings.Fields(s)
+
+	var result []float64
+	for _, p := range parts {
+		f, err := strconv.ParseFloat(p, 64)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, f)
+	}
+	return result, nil
 }
 
 func setPagesObj(pdf *PDFData) error {

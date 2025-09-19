@@ -28,6 +28,7 @@ type ContentText struct {
 	align         int
 	lineWidth     float64
 	pdfProtection *gopdf.PDFProtection
+	pageHeight    float64
 }
 
 func (c *ContentText) setProtection(p *gopdf.PDFProtection) {
@@ -71,7 +72,7 @@ func (c *ContentText) toSteram() (*bytes.Buffer, error) {
 		c.x,
 		c.y,
 		&c.pdfFontData.font,
-		pageHeight(),
+		c.pageHeight,
 		gopdf.ContentTypeText,
 		gopdf.CellOption{
 			Align:  c.align,
@@ -110,7 +111,7 @@ func (c *ContentText) measureTextWidth() (float64, error) {
 		0,
 		0,
 		&c.pdfFontData.font,
-		pageHeight(),
+		c.pageHeight,
 		gopdf.ContentTypeText,
 		gopdf.CellOption{
 			Align:  c.align,
