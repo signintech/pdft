@@ -6,13 +6,14 @@ import (
 )
 
 type contentImgBase64 struct {
-	base64    string
-	pageNum   int
-	x         float64
-	y         float64
-	w         float64
-	h         float64
-	refPdfimg *PDFImageData
+	base64     string
+	pageNum    int
+	x          float64
+	y          float64
+	w          float64
+	h          float64
+	pageHeight float64
+	refPdfimg  *PDFImageData
 }
 
 func (c *contentImgBase64) page() int {
@@ -22,6 +23,6 @@ func (c *contentImgBase64) page() int {
 func (c *contentImgBase64) toSteram() (*bytes.Buffer, error) {
 	var buff bytes.Buffer
 	//fmt.Printf("xObjChar = %d\n", c.refPdfimg.objID)
-	buff.WriteString(fmt.Sprintf("q %0.2f 0 0 %0.2f %0.2f %0.2f cm /%s%d Do Q\n", c.w, c.h, c.x, pageHeight()-(c.y+c.h), c.refPdfimg.xObjChar, c.refPdfimg.xObjIndex))
+	buff.WriteString(fmt.Sprintf("q %0.2f 0 0 %0.2f %0.2f %0.2f cm /%s%d Do Q\n", c.w, c.h, c.x, c.pageHeight-(c.y+c.h), c.refPdfimg.xObjChar, c.refPdfimg.xObjIndex))
 	return &buff, nil
 }

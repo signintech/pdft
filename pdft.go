@@ -63,9 +63,9 @@ type current struct {
 	lineWidth float64
 }
 
-func pageHeight() float64 {
-	return 841.89
-}
+//func pageHeight() float64 {
+//	return 841.89
+//}
 
 func (i *PDFt) protection() *gopdf.PDFProtection {
 	return i.pdfProtection
@@ -308,6 +308,7 @@ func (i *PDFt) Insert(text string, pageNum int, x float64, y float64, w float64,
 	ct.h = h
 	ct.align = align
 	ct.lineWidth = i.curr.lineWidth
+	ct.pageHeight = i.pageHeight(pageNum)
 	ct.setProtection(i.protection())
 	if _, have := i.fontDatas[ct.fontName]; !have {
 		return ErrFontNameNotFound
@@ -326,12 +327,21 @@ func (i *PDFt) MeasureTextWidth(text string) (float64, error) {
 	ct.fontStyle = i.curr.fontStyle
 	ct.fontSize = i.curr.fontSize
 	ct.lineWidth = i.curr.lineWidth
+	ct.pageHeight = i.pageHeight(1)
 	if _, have := i.fontDatas[ct.fontName]; !have {
 		return 0, ErrFontNameNotFound
 	}
 	ct.pdfFontData = i.fontDatas[ct.fontName]
 	width, err := ct.measureTextWidth()
 	return width, err
+}
+
+func (i *PDFt) pageHeight(pageNum int) float64 {
+	pageIndex := pageNum - 1
+	if val, ok := i.pdf.pageSizes[pageIndex]; ok {
+		return val[3]
+	}
+	return 841.89 //A4
 }
 
 // InsertImgBase64 insert img base 64
@@ -372,6 +382,7 @@ func (i *PDFt) InsertImgBase64(base64str string, pageNum int, x float64, y float
 	ct.h = h
 	ct.w = w
 	ct.refPdfimg = &pdfimg //i.pdfImgs[len(i.pdfImgs)-1]
+	ct.pageHeight = i.pageHeight(pageNum)
 	i.contenters = append(i.contenters, &ct)
 	return nil
 }
@@ -410,6 +421,7 @@ func (i *PDFt) InsertImg(img []byte, pageNum int, x float64, y float64, w float6
 	ct.y = y
 	ct.h = h
 	ct.w = w
+	ct.pageHeight = i.pageHeight(pageNum)
 	ct.refPdfimg = &pdfimg //i.pdfImgs[len(i.pdfImgs)-1]
 	i.contenters = append(i.contenters, &ct)
 	//fmt.Printf("append(i.contenters, &ct) %d\n", len(i.contenters))
@@ -455,6 +467,7 @@ func (i *PDFt) InsertImgWithCache(img []byte, pageNum int, x float64, y float64,
 	ct.h = h
 	ct.w = w
 	ct.refPdfimg = pdfimg
+	ct.pageHeight = i.pageHeight(pageNum)
 	i.contenters = append(i.contenters, &ct)
 	return nil
 }

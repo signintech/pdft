@@ -12,11 +12,12 @@ import (
 
 // PDFData pdf file data
 type PDFData struct {
-	trailer  TrailerData
-	xrefs    []XrefData
-	objIDs   []int
-	objs     []PDFObjData
-	pagesObj *PDFObjData
+	trailer   TrailerData
+	xrefs     []XrefData
+	objIDs    []int
+	objs      []PDFObjData
+	pagesObj  *PDFObjData
+	pageSizes map[int][]float64 //key is page objID
 }
 
 // TrailerData trailer
